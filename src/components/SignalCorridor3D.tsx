@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import { CASE_FILES } from '../data/caseFiles';
-import { PLANETS_META, PlanetMeta } from '../data/planetData';
+import { PLANETS_META } from '../data/planetData';
 import { SpaceshipModel } from './SpaceshipModel';
 import { CosmicPlanets } from './CosmicPlanets';
 import { SpaceshipCockpitHUD } from './SpaceshipCockpitHUD';
@@ -24,12 +24,14 @@ function SpaceshipFlightEngine({
   targetPlanetIndex,
   isAutopilot,
   isBoosting,
+  manualSteerX,
   onUpdateTelemetry,
   onReachPlanet
 }: {
   targetPlanetIndex: number;
   isAutopilot: boolean;
   isBoosting: boolean;
+  manualSteerX: number;
   onUpdateTelemetry: (pos: THREE.Vector3, speed: number, dist: number, roll: number) => void;
   onReachPlanet: (index: number) => void;
 }) {
@@ -91,19 +93,22 @@ function SpaceshipFlightEngine({
 
     } else {
       // ---------------------------------------------------------
-      // MANUAL PILOTING (MOUSE & WASD)
+      // MANUAL PILOTING (TOUCH BUTTONS, TOUCH DRAG & MOUSE)
       // ---------------------------------------------------------
       const pointer = state.pointer;
-      const targetPitch = -pointer.y * 0.8;
-      const targetYaw = -pointer.x * 1.5;
-      const targetRoll = -pointer.x * 0.65;
+      const activeInputX = manualSteerX !== 0 ? manualSteerX : pointer.x;
+      const activeInputY = pointer.y;
 
-      shipRot.current.x = THREE.MathUtils.lerp(shipRot.current.x, targetPitch, delta * 3.0);
-      shipRot.current.y = THREE.MathUtils.lerp(shipRot.current.y, targetYaw, delta * 3.0);
-      currentRoll.current = THREE.MathUtils.lerp(currentRoll.current, targetRoll, delta * 4.0);
+      const targetPitch = -activeInputY * 0.8;
+      const targetYaw = -activeInputX * 1.6;
+      const targetRoll = -activeInputX * 0.75;
+
+      shipRot.current.x = THREE.MathUtils.lerp(shipRot.current.x, targetPitch, delta * 3.5);
+      shipRot.current.y = THREE.MathUtils.lerp(shipRot.current.y, targetYaw, delta * 3.5);
+      currentRoll.current = THREE.MathUtils.lerp(currentRoll.current, targetRoll, delta * 4.5);
       shipQuat.current.setFromEuler(shipRot.current);
 
-      const targetSpeed = isBoosting ? 2.5 : 0.65;
+      const targetSpeed = isBoosting ? 2.6 : 0.65;
       shipSpeed.current = THREE.MathUtils.lerp(shipSpeed.current, targetSpeed, delta * 3.0);
 
       // Move ship forward in direction of its orientation
@@ -150,13 +155,21 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
   const [activePlanetIndex, setActivePlanetIndex] = useState(initialStationIndex);
   const [isAutopilot, setIsAutopilot] = useState(true);
   const [isBoosting, setIsBoosting] = useState(false);
-  const [isCodexOpen, setIsCodexOpen] = useState(true);
+  const [manualSteerX, setManualSteerX] = useState(0);
+  
+  // On mobile devices, start with the drawer closed so they see the 3D world immediately!
+  const [isCodexOpen, setIsCodexOpen] = useState(() => {
+    return typeof window !== 'undefined' ? window.innerWidth >= 1024 : false;
+  });
   const [isSoundMuted, setIsSoundMuted] = useState(false);
 
   // Live telemetry state
   const [shipPosition, setShipPosition] = useState(new THREE.Vector3(12, 5, 36));
   const [flightSpeed, setFlightSpeed] = useState(0.5);
   const [distanceToTarget, setDistanceToTarget] = useState(12);
+
+  // Touch drag state
+  const touchStartX = useRef<number | null>(null);
 
   // Achievement unlock notification banner
   const [achievementNotification, setAchievementNotification] = useState<{
@@ -171,6 +184,7 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
   const handleSelectPlanet = (idx: number) => {
     setActivePlanetIndex(idx);
     setIsAutopilot(true);
+    setManualSteerX(0);
     flightAudio.playWarpWhoosh();
     flightAudio.playTargetLock();
 
@@ -187,7 +201,11 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
       subtitle: planet.achievementSubtitle
     });
     flightAudio.playAchievementChime();
-    setIsCodexOpen(true);
+
+    // Auto-open codex only on wide desktop screens so mobile view is not blocked
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      setIsCodexOpen(true);
+    }
 
     // Auto-dismiss achievement toast after 6 seconds
     setTimeout(() => {
@@ -200,10 +218,12 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Shift' || e.key === ' ' || e.key.toLowerCase() === 'w') {
         setIsBoosting(true);
-      } else if (e.key === 'ArrowRight') {
-        handleSelectPlanet(Math.min(PLANETS_META.length - 1, activePlanetIndex + 1));
-      } else if (e.key === 'ArrowLeft') {
-        handleSelectPlanet(Math.max(0, activePlanetIndex - 1));
+      } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+        setManualSteerX(1.0);
+        setIsAutopilot(false);
+      } else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+        setManualSteerX(-1.0);
+        setIsAutopilot(false);
       } else if (e.key.toLowerCase() === 'f') {
         setIsCodexOpen(prev => !prev);
       } else if (e.key === 'Escape') {
@@ -214,6 +234,8 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Shift' || e.key === ' ' || e.key.toLowerCase() === 'w') {
         setIsBoosting(false);
+      } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd' || e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+        setManualSteerX(0);
       }
     };
 
@@ -231,11 +253,33 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 w-screen h-screen bg-[#040609] overflow-hidden select-none">
+    <div 
+      className="fixed inset-0 z-50 w-screen h-screen bg-[#040609] overflow-hidden select-none"
+      style={{ touchAction: 'none' }}
+      onTouchStart={(e) => {
+        // Only steer if touch started on canvas (not on interactive buttons)
+        if ((e.target as HTMLElement).tagName !== 'BUTTON') {
+          touchStartX.current = e.touches[0].clientX;
+        }
+      }}
+      onTouchMove={(e) => {
+        if (touchStartX.current !== null) {
+          const deltaX = (e.touches[0].clientX - touchStartX.current) / (window.innerWidth * 0.3);
+          setManualSteerX(Math.max(-1, Math.min(1, deltaX * 1.8)));
+          setIsAutopilot(false);
+        }
+      }}
+      onTouchEnd={() => {
+        touchStartX.current = null;
+        setManualSteerX(0);
+      }}
+    >
       
-      {/* 3D Cosmic Space Flight Canvas */}
+      {/* 3D Cosmic Space Flight Canvas with Mobile Performance Safeguards */}
       <Canvas
         camera={{ position: [12, 7, 42], fov: 48, near: 0.1, far: 800 }}
+        dpr={[1, 1.5]}
+        gl={{ powerPreference: 'high-performance', antialias: true }}
         onCreated={({ scene }) => {
           scene.fog = new THREE.FogExp2('#040609', 0.005);
         }}
@@ -245,11 +289,11 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
         <directionalLight position={[100, 80, 50]} intensity={2.2} color="#fdf4dc" />
         <directionalLight position={[-80, -40, -50]} intensity={0.6} color="#38bdf8" />
 
-        {/* Dense Galactic Starfield (6000 stars) */}
-        <Stars radius={160} depth={80} count={6000} factor={4} saturation={0} fade speed={1.2} />
+        {/* Dense Galactic Starfield */}
+        <Stars radius={160} depth={80} count={5000} factor={4} saturation={0} fade speed={1.2} />
 
         {/* Cosmic Plasma Dust Motes */}
-        <Sparkles count={140} scale={120} size={2.6} speed={0.3} color="#38bdf8" opacity={0.35} />
+        <Sparkles count={120} scale={120} size={2.5} speed={0.3} color="#38bdf8" opacity={0.35} />
 
         {/* 7 Celestial Megastructure Destination Planets situated to the sides */}
         <CosmicPlanets
@@ -263,6 +307,7 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
           targetPlanetIndex={activePlanetIndex}
           isAutopilot={isAutopilot}
           isBoosting={isBoosting}
+          manualSteerX={manualSteerX}
           onUpdateTelemetry={(pos, spd, dist) => {
             setShipPosition(pos);
             setFlightSpeed(spd);
@@ -272,7 +317,7 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
         />
       </Canvas>
 
-      {/* Futuristic Cockpit HUD, Target Lock & Autopilot Scrubber */}
+      {/* Futuristic Cockpit HUD, Target Lock, Virtual Touch Controls & Autopilot Carousel */}
       <SpaceshipCockpitHUD
         currentPlanetIndex={activePlanetIndex}
         targetedPlanet={activePlanet}
@@ -286,6 +331,24 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
         onToggleCodex={() => setIsCodexOpen(prev => !prev)}
         isCodexOpen={isCodexOpen}
         onExitFlight={onExitToSkim}
+        onSteerLeft={() => {
+          setManualSteerX(-1.0);
+          setIsAutopilot(false);
+        }}
+        onSteerRight={() => {
+          setManualSteerX(1.0);
+          setIsAutopilot(false);
+        }}
+        onSteerReset={() => {
+          setManualSteerX(0);
+        }}
+        onStartBoost={() => {
+          setIsBoosting(true);
+          flightAudio.playWarpWhoosh();
+        }}
+        onStopBoost={() => {
+          setIsBoosting(false);
+        }}
       />
 
       {/* Planetary Architectural Codex Drawer ("The 3D Planet Will Tell Me Info of This") */}

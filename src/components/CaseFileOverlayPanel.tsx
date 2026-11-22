@@ -52,14 +52,14 @@ export const CaseFileOverlayPanel: React.FC<CaseFileOverlayPanelProps> = ({
           {/* Station Steppers */}
           <button
             onClick={() => onNavigateStation('prev')}
-            className="p-1.5 rounded bg-[#161a22] hover:bg-[#202735] text-[#9aa4b5] hover:text-[#eeeff2] border border-[#263040] transition-colors"
+            className="p-2 sm:p-1.5 rounded bg-[#161a22] hover:bg-[#202735] text-[#9aa4b5] hover:text-[#eeeff2] border border-[#263040] transition-colors"
             title="Previous Station (Left Arrow)"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={() => onNavigateStation('next')}
-            className="p-1.5 rounded bg-[#161a22] hover:bg-[#202735] text-[#9aa4b5] hover:text-[#eeeff2] border border-[#263040] transition-colors"
+            className="p-2 sm:p-1.5 rounded bg-[#161a22] hover:bg-[#202735] text-[#9aa4b5] hover:text-[#eeeff2] border border-[#263040] transition-colors"
             title="Next Station (Right Arrow)"
           >
             <ChevronRight className="w-4 h-4" />
@@ -67,10 +67,11 @@ export const CaseFileOverlayPanel: React.FC<CaseFileOverlayPanelProps> = ({
           
           <button
             onClick={onClose}
-            className="p-1.5 ml-2 rounded bg-[#161a22] hover:bg-[#202735] text-[#9aa4b5] hover:text-[#eeeff2] border border-[#263040] transition-colors"
-            title="Close Panel (Esc)"
+            className="flex items-center gap-1 px-3 py-1.5 ml-1 rounded-lg bg-[#d4883b] hover:bg-[#e0984d] text-[#0b0d11] font-bold text-xs font-mono shadow transition-transform active:scale-95"
+            title="Close Panel and resume flight"
           >
             <X className="w-4 h-4" />
+            <span className="hidden xs:inline sm:inline">Back to Flight</span>
           </button>
         </div>
       </div>
@@ -223,13 +224,13 @@ export const CaseFileOverlayPanel: React.FC<CaseFileOverlayPanelProps> = ({
       </div>
 
       {/* Bottom Footer Actions */}
-      <div className="p-4 border-t border-[#1c222e] bg-[#0f1218]/90 flex items-center justify-between text-xs font-mono">
-        <span className="text-[#7a8494]">Use ← / → keys to drift stations</span>
+      <div className="p-4 border-t border-[#1c222e] bg-[#0f1218]/90 flex items-center justify-between text-xs font-mono gap-3">
+        <span className="text-[#7a8494] hidden sm:inline">Use ← / → to switch planets</span>
         <button
           onClick={onClose}
-          className="px-3.5 py-1.5 rounded bg-[#181d26] hover:bg-[#202735] text-[#eeeff2] border border-[#2d374a] transition-colors"
+          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#d4883b] hover:bg-[#e0984d] text-[#0b0d11] font-bold text-center transition-all active:scale-95 shadow-lg"
         >
-          Resume 3D Drift
+          Resume 3D Flight
         </button>
       </div>
 

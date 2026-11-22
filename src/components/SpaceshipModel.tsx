@@ -118,10 +118,15 @@ export const SpaceshipModel: React.FC<SpaceshipModelProps> = ({
           <cylinderGeometry args={[0.13, 0.15, 0.6, 12]} />
           <meshStandardMaterial color="#0c0e14" metalness={0.95} roughness={0.1} />
         </mesh>
-        {/* Plasma Thruster Flame */}
+        {/* Plasma Thruster Core */}
         <mesh ref={engineFlame1} position={[0, 0, -0.45]} rotation={[Math.PI / 2, 0, 0]}>
-          <coneGeometry args={[0.12, 0.7, 12]} />
-          <meshBasicMaterial color={thrusterColor} transparent opacity={0.85} />
+          <coneGeometry args={[0.12, 0.75, 12]} />
+          <meshBasicMaterial color={thrusterColor} transparent opacity={0.9} />
+        </mesh>
+        {/* Violet Ion Halo Ring */}
+        <mesh position={[0, 0, -0.3]} rotation={[Math.PI / 2, 0, 0]}>
+          <coneGeometry args={[0.16, 0.6, 12]} />
+          <meshBasicMaterial color="#c084fc" transparent opacity={0.4} blending={THREE.AdditiveBlending} />
         </mesh>
       </group>
 
@@ -131,12 +136,20 @@ export const SpaceshipModel: React.FC<SpaceshipModelProps> = ({
           <cylinderGeometry args={[0.13, 0.15, 0.6, 12]} />
           <meshStandardMaterial color="#0c0e14" metalness={0.95} roughness={0.1} />
         </mesh>
-        {/* Plasma Thruster Flame */}
+        {/* Plasma Thruster Core */}
         <mesh ref={engineFlame2} position={[0, 0, -0.45]} rotation={[Math.PI / 2, 0, 0]}>
-          <coneGeometry args={[0.12, 0.7, 12]} />
-          <meshBasicMaterial color={thrusterColor} transparent opacity={0.85} />
+          <coneGeometry args={[0.12, 0.75, 12]} />
+          <meshBasicMaterial color={thrusterColor} transparent opacity={0.9} />
+        </mesh>
+        {/* Violet Ion Halo Ring */}
+        <mesh position={[0, 0, -0.3]} rotation={[Math.PI / 2, 0, 0]}>
+          <coneGeometry args={[0.16, 0.6, 12]} />
+          <meshBasicMaterial color="#c084fc" transparent opacity={0.4} blending={THREE.AdditiveBlending} />
         </mesh>
       </group>
+
+      {/* Thruster Dynamic Illumination Light */}
+      <pointLight position={[0, -0.04, -1.2]} color={isBoosting ? "#fbbf24" : "#38bdf8"} intensity={isBoosting ? 3.5 : 1.8} distance={8} />
 
       {/* Subtle Ship Forward Cockpit Headlights */}
       <pointLight position={[0, 0, 1.6]} color="#ffffff" intensity={2.0} distance={15} />

@@ -37,7 +37,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 Sourabh Rustagi
               </a>
               <span className="hidden sm:inline-block text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#181d26] border border-[#283244] text-[#d4883b]">
-                LEAD ENGINEER &amp; ARCHITECT
+                CHIEF SYSTEMS &amp; CLOUD-NATIVE ARCHITECT
               </span>
             </div>
             <div className="flex items-center gap-2 text-[11px] font-mono text-[#7a8494]">

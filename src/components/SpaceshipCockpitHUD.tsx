@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Eye, Volume2, VolumeX, Zap, Radio, ChevronLeft, ChevronRight, Compass, Award } from 'lucide-react';
+import { ArrowLeft, Eye, Volume2, VolumeX, Zap, Radio, ChevronLeft, ChevronRight, Compass, Award, CheckCircle2 } from 'lucide-react';
 import { PLANETS_META, PlanetMeta } from '../data/planetData';
 
 interface SpaceshipCockpitHUDProps {
@@ -164,34 +164,64 @@ export const SpaceshipCockpitHUD: React.FC<SpaceshipCockpitHUDProps> = ({
         </div>
 
         {/* Target Lock Readout Box */}
-        <div className="mt-4 px-3 py-1 rounded-lg bg-[#080b10]/85 border border-[#232f42] text-[10px] sm:text-[11px] font-mono text-[#38bdf8] flex items-center gap-2 shadow-lg backdrop-blur-sm">
+        <div className="mt-4 px-3 py-1.5 rounded-xl bg-[#080b10]/90 border border-[#232f42] text-[10px] sm:text-[11px] font-mono text-[#38bdf8] flex items-center gap-2 shadow-lg backdrop-blur-sm">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span className="truncate max-w-[150px] sm:max-w-none">{targetedPlanet.name.toUpperCase()}</span>
+          <span className="truncate max-w-[150px] sm:max-w-none font-bold" style={{ color: targetedPlanet.accentGlow }}>
+            {targetedPlanet.landingZoneId}: {targetedPlanet.companyName.toUpperCase()}
+          </span>
           <span className="text-[#566579]">|</span>
           <span className="text-[#eeeff2]">{Math.round(distanceToTarget)} AU</span>
           {isBoosting && <span className="text-[#d4883b] font-bold animate-pulse">[WARP]</span>}
         </div>
 
-        {/* Mission Progression Action: Warp to Next Sector or Grand Finale */}
+        {/* Mission Progression Action: Touchdown at Company Landing Zone */}
         {isOrbiting && (
-          <div className="pointer-events-auto mt-4 animate-in fade-in zoom-in duration-300">
-            {currentPlanetIndex < 6 ? (
+          <div className="pointer-events-auto mt-4 max-w-md w-full px-3 text-center animate-in fade-in zoom-in duration-300">
+            <div className="p-3.5 rounded-2xl bg-[#0a0e16]/95 border border-[#2d3a4e] shadow-2xl backdrop-blur-xl mb-3">
+              <div className="flex items-center justify-center gap-2 text-xs font-mono font-bold mb-1" style={{ color: targetedPlanet.accentGlow }}>
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>TOUCHDOWN CONFIRMED: {targetedPlanet.landingZoneId}</span>
+              </div>
+              <div className="text-sm font-display font-bold text-[#eeeff2]">
+                {targetedPlanet.companyName}
+              </div>
+              <div className="text-[11px] font-mono text-[#94a3b8] mt-0.5">
+                {targetedPlanet.roleTitle} ({targetedPlanet.tenure}) • <span className="text-emerald-400 font-bold">{targetedPlanet.keyMetric}</span>
+              </div>
+              {targetedPlanet.award && (
+                <div className="text-[10px] font-mono text-amber-300 font-semibold mt-1">
+                  ★ {targetedPlanet.award}
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-2">
               <button
-                onClick={onWarpToNextSector}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#d4883b] hover:bg-[#e0984d] text-[#0b0d11] font-mono text-xs font-bold shadow-[0_0_25px_rgba(212,136,59,0.5)] transition-all hover:scale-105 active:scale-95 animate-pulse"
+                onClick={onToggleCodex}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#141c2b] hover:bg-[#1e293b] text-[#38bdf8] border border-[#2b394f] font-mono text-xs font-bold transition-all hover:scale-105 active:scale-95 shadow-lg"
               >
-                <Zap className="w-4 h-4 fill-current" />
-                <span>WARP TO SECTOR 0{currentPlanetIndex + 2}: {nextPlanet.name.split(':')[1]?.trim()} →</span>
+                <Eye className="w-4 h-4" />
+                <span>Inspect Company Proofs</span>
               </button>
-            ) : (
-              <button
-                onClick={onOpenGrandFinale}
-                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#38bdf8] hover:bg-[#0284c7] text-[#0b0d11] font-mono text-xs font-bold shadow-[0_0_35px_rgba(56,189,248,0.6)] transition-all hover:scale-105 active:scale-95 animate-pulse"
-              >
-                <Award className="w-4 h-4" />
-                <span>MISSION ACCOMPLISHED // REVIEW ARCHITECT DOSSIER ★</span>
-              </button>
-            )}
+
+              {currentPlanetIndex < 6 ? (
+                <button
+                  onClick={onWarpToNextSector}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#d4883b] hover:bg-[#e0984d] text-[#0b0d11] font-mono text-xs font-bold shadow-[0_0_25px_rgba(212,136,59,0.5)] transition-all hover:scale-105 active:scale-95 animate-pulse"
+                >
+                  <Zap className="w-4 h-4 fill-current" />
+                  <span>WARP TO LZ-0{currentPlanetIndex + 2} →</span>
+                </button>
+              ) : (
+                <button
+                  onClick={onOpenGrandFinale}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#38bdf8] hover:bg-[#0284c7] text-[#0b0d11] font-mono text-xs font-bold shadow-[0_0_35px_rgba(56,189,248,0.6)] transition-all hover:scale-105 active:scale-95 animate-pulse"
+                >
+                  <Award className="w-4 h-4" />
+                  <span>MISSION COMPLETE // ARCHITECT DOSSIER ★</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -287,9 +317,17 @@ export const SpaceshipCockpitHUD: React.FC<SpaceshipCockpitHUDProps> = ({
                 {isCleared ? (
                   <span className="text-emerald-400 font-bold">✓</span>
                 ) : (
-                  <span className="font-bold">0{planet.chapterNumber}</span>
+                  <span className="font-bold">{planet.landingZoneId}</span>
                 )}
-                <span>{planet.name.split(':')[1]?.trim() || planet.name}</span>
+                <span>
+                  {idx === 0 && 'EaseMyTrip'}
+                  {idx === 1 && 'Daffodil'}
+                  {idx === 2 && 'TransUnion Vault'}
+                  {idx === 3 && 'TransUnion Platform'}
+                  {idx === 4 && 'Samsung Knox'}
+                  {idx === 5 && 'Samsung AI Lab'}
+                  {idx === 6 && 'Open Source'}
+                </span>
                 {isFlagship && <span className="text-amber-300 font-black">★</span>}
               </button>
             );

@@ -13,41 +13,42 @@ class ProceduralPlanetTextures {
     return { canvas, ctx };
   }
 
-  // Planet 01: Ingress-Prime (Warm molten gold & continental fissures)
+  // Planet 01: Inventra & EaseMyTrip (Vibrant molten gold, fiery amber & continental flight arteries)
   public getPlanet01Texture(): THREE.CanvasTexture {
     if (this.cache.has('p1')) return this.cache.get('p1')!;
     const { canvas, ctx } = this.createCanvas();
 
-    // Base magma background
+    // Saturated fiery magma base
     const grad = ctx.createLinearGradient(0, 0, 0, 512);
-    grad.addColorStop(0, '#451a03');
-    grad.addColorStop(0.5, '#78350f');
-    grad.addColorStop(1, '#2d1102');
+    grad.addColorStop(0, '#78350f');
+    grad.addColorStop(0.3, '#d97706');
+    grad.addColorStop(0.7, '#b45309');
+    grad.addColorStop(1, '#451a03');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 1024, 512);
 
-    // Continental landmasses & glowing amber data veins
-    ctx.fillStyle = '#b45309';
-    for (let i = 0; i < 45; i++) {
+    // Glowing golden continents
+    ctx.fillStyle = '#f59e0b';
+    for (let i = 0; i < 50; i++) {
       const cx = (i * 87) % 1024;
       const cy = (i * 53) % 512;
-      const r = 40 + (i * 7) % 80;
+      const r = 35 + (i * 7) % 85;
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // Glowing golden fissure veins
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 3;
-    for (let i = 0; i < 20; i++) {
+    // High-energy luminous solar flight veins
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 3.5;
+    for (let i = 0; i < 22; i++) {
       ctx.beginPath();
       let x = (i * 123) % 1024;
       let y = (i * 97) % 512;
       ctx.moveTo(x, y);
       for (let j = 0; j < 6; j++) {
-        x += (Math.sin(i + j) * 80);
-        y += (Math.cos(i + j) * 60);
+        x += (Math.sin(i + j) * 85);
+        y += (Math.cos(i + j) * 65);
         ctx.lineTo(x, y);
       }
       ctx.stroke();
@@ -60,199 +61,255 @@ class ProceduralPlanetTextures {
     return tex;
   }
 
-  // Planet 02: Crypt-FHIR (Icy cyan/teal oceans & frosty polar vortex)
+  // Planet 02: Daffodil Software (Radiant emerald healthcare oceans & vivid teal biospheres)
   public getPlanet02Texture(): THREE.CanvasTexture {
     if (this.cache.has('p2')) return this.cache.get('p2')!;
     const { canvas, ctx } = this.createCanvas();
 
-    // Deep oceanic teal base
+    // Vibrant deep oceanic teal & emerald gradient
     const grad = ctx.createLinearGradient(0, 0, 0, 512);
-    grad.addColorStop(0, '#0f766e');
-    grad.addColorStop(0.5, '#115e59');
-    grad.addColorStop(1, '#042f2e');
+    grad.addColorStop(0, '#047857');
+    grad.addColorStop(0.4, '#0d9488');
+    grad.addColorStop(0.8, '#065f46');
+    grad.addColorStop(1, '#022c22');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 1024, 512);
 
-    // Crystalline continental ice shelves
-    ctx.fillStyle = '#2dd4bf';
-    for (let i = 0; i < 35; i++) {
-      const cx = (i * 95) % 1024;
-      const cy = 60 + (i * 45) % 390;
-      const r = 35 + (i * 9) % 70;
+    // Lush emerald landmasses
+    ctx.fillStyle = '#10b981';
+    for (let i = 0; i < 40; i++) {
+      const cx = (i * 111) % 1024;
+      const cy = (i * 67) % 512;
+      const r = 30 + (i * 5) % 65;
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // Polar caps & atmospheric frost bands
-    ctx.fillStyle = 'rgba(240, 253, 250, 0.45)';
-    ctx.fillRect(0, 0, 1024, 60);
-    ctx.fillRect(0, 452, 1024, 60);
+    // Glowing cyan healthcare data rivers
+    ctx.strokeStyle = '#67e8f9';
+    ctx.lineWidth = 2.5;
+    for (let i = 0; i < 16; i++) {
+      ctx.beginPath();
+      let x = (i * 145) % 1024;
+      let y = (i * 83) % 512;
+      ctx.moveTo(x, y);
+      for (let j = 0; j < 5; j++) {
+        x += Math.cos(i * 2 + j) * 75;
+        y += Math.sin(i * 2 + j) * 55;
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    // Polar ice caps (Brilliant clean white)
+    ctx.fillStyle = '#f0fdfa';
+    ctx.fillRect(0, 0, 1024, 45);
+    ctx.fillRect(0, 467, 1024, 45);
 
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
     this.cache.set('p2', tex);
     return tex;
   }
 
-  // Planet 03: Vault-9 (Obsidian basalt with metallic circuit grooves)
+  // Planet 03: TransUnion Vault (Deep midnight obsidian & rich golden security lattice)
   public getPlanet03Texture(): THREE.CanvasTexture {
     if (this.cache.has('p3')) return this.cache.get('p3')!;
     const { canvas, ctx } = this.createCanvas();
 
+    // Dark obsidian base
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(0, 0, 1024, 512);
 
-    // Geometric hexagonal vault grids
-    ctx.strokeStyle = '#d97706';
-    ctx.lineWidth = 1.5;
-    const size = 32;
-    for (let x = 0; x < 1024; x += size * 1.5) {
-      for (let y = 0; y < 512; y += size * 1.732) {
-        ctx.strokeRect(x, y, size, size);
+    // Rich golden vault plates
+    ctx.fillStyle = '#b45309';
+    for (let x = 0; x < 1024; x += 128) {
+      for (let y = 0; y < 512; y += 128) {
+        if ((x + y) % 256 === 0) {
+          ctx.fillRect(x + 10, y + 10, 108, 108);
+        }
       }
     }
 
-    // Amber vault lock indicators
-    ctx.fillStyle = '#fbbf24';
-    for (let i = 0; i < 30; i++) {
-      ctx.fillRect((i * 137) % 1024, (i * 83) % 512, 12, 12);
+    // High-visibility gold security lines
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 2.5;
+    for (let x = 0; x < 1024; x += 64) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, 512);
+      ctx.stroke();
+    }
+    for (let y = 0; y < 512; y += 64) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(1024, y);
+      ctx.stroke();
     }
 
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
     this.cache.set('p3', tex);
     return tex;
   }
 
-  // Planet 04: GitOps-Gateway (Canary Split binary textures)
+  // Planet 04: TransUnion Platform (Vibrant lime & electric cobalt binary world)
   public getPlanet04Texture(): THREE.CanvasTexture {
     if (this.cache.has('p4')) return this.cache.get('p4')!;
     const { canvas, ctx } = this.createCanvas();
 
-    // Dual gradient (Emerald to Cyan)
-    const grad = ctx.createLinearGradient(0, 0, 1024, 0);
-    grad.addColorStop(0, '#064e3b');
-    grad.addColorStop(0.5, '#047857');
-    grad.addColorStop(1, '#0369a1');
+    // Deep royal blue & cobalt base
+    const grad = ctx.createLinearGradient(0, 0, 1024, 512);
+    grad.addColorStop(0, '#0c4a6e');
+    grad.addColorStop(0.5, '#0284c7');
+    grad.addColorStop(1, '#082f49');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 1024, 512);
 
-    // Service mesh network traces
-    ctx.strokeStyle = '#34d399';
-    ctx.lineWidth = 2;
-    for (let i = 0; i < 25; i++) {
+    // Vivid emerald GitOps continents
+    ctx.fillStyle = '#22c55e';
+    for (let i = 0; i < 45; i++) {
+      const cx = (i * 93) % 1024;
+      const cy = (i * 59) % 512;
+      const r = 25 + (i * 6) % 55;
       ctx.beginPath();
-      ctx.moveTo(0, (i * 22) % 512);
-      ctx.bezierCurveTo(300, (i * 40) % 512, 700, (i * 15) % 512, 1024, (i * 30) % 512);
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Canary glowing pipeline streams (90% green, 10% amber)
+    ctx.strokeStyle = '#4ade80';
+    ctx.lineWidth = 3;
+    for (let i = 0; i < 12; i++) {
+      ctx.beginPath();
+      ctx.moveTo(0, (i * 42) % 512);
+      ctx.bezierCurveTo(340, i * 35, 680, 512 - i * 35, 1024, (i * 42) % 512);
       ctx.stroke();
     }
 
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
     this.cache.set('p4', tex);
     return tex;
   }
 
-  // Planet 05: Orleans-Prime (FLAGSHIP ★ - Massive Jupiter-style solar gas giant with storms)
+  // Planet 05: Samsung Knox Flagship ★ (Majestic royal cobalt & glowing solar-gold bands)
   public getPlanet05Texture(): THREE.CanvasTexture {
     if (this.cache.has('p5')) return this.cache.get('p5')!;
     const { canvas, ctx } = this.createCanvas();
 
-    // Rich horizontal gas cloud bands
-    const bands = [
-      '#78350f', '#92400e', '#b45309', '#d97706', '#f59e0b',
-      '#fbbf24', '#d97706', '#b45309', '#78350f', '#451a03'
+    // Multi-band gas giant bands (Cobalt, Royal Blue, Gold, Amber)
+    const bandColors = [
+      '#1e3a8a', '#1d4ed8', '#2563eb', '#3b82f6', 
+      '#b45309', '#d97706', '#f59e0b', '#fbbf24', 
+      '#1e40af', '#172554', '#3b82f6', '#fef08a'
     ];
 
-    bands.forEach((color, idx) => {
-      ctx.fillStyle = color;
-      const y = (idx * 512) / bands.length;
-      const h = 512 / bands.length + 4;
-      ctx.fillRect(0, y, 1024, h);
-    });
+    for (let i = 0; i < 512; i += 32) {
+      const c = bandColors[(i / 32) % bandColors.length];
+      ctx.fillStyle = c;
+      ctx.fillRect(0, i, 1024, 32);
+    }
 
-    // Great Orleans Storm Vortex (The 1M Concurrent Users Core)
-    const stormGrad = ctx.createRadialGradient(640, 240, 10, 640, 240, 90);
-    stormGrad.addColorStop(0, '#ffffff');
-    stormGrad.addColorStop(0.3, '#fde047');
-    stormGrad.addColorStop(0.7, '#ea580c');
-    stormGrad.addColorStop(1, 'transparent');
-    ctx.fillStyle = stormGrad;
+    // Great Virtual Actor Storm Vortex (Swirling Solar Gold)
+    ctx.fillStyle = '#fef08a';
     ctx.beginPath();
-    ctx.ellipse(640, 240, 100, 55, 0, 0, Math.PI * 2);
+    ctx.ellipse(380, 260, 110, 50, Math.PI / 12, 0, Math.PI * 2);
     ctx.fill();
 
-    // Turbulent cloud whorls & turbulence ripples
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-    ctx.lineWidth = 3;
-    for (let i = 0; i < 18; i++) {
-      ctx.beginPath();
-      ctx.moveTo(0, (i * 31) % 512);
-      ctx.bezierCurveTo(400, (i * 31 + 25) % 512, 600, (i * 31 - 25) % 512, 1024, (i * 31) % 512);
-      ctx.stroke();
-    }
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.ellipse(380, 260, 130, 65, Math.PI / 12, 0, Math.PI * 2);
+    ctx.stroke();
 
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
     this.cache.set('p5', tex);
     return tex;
   }
 
-  // Planet 06: Nexus-Agentis (Indigo neural synaptic networks)
+  // Planet 06: Samsung AI Research Lab (Radiant cyber neon violet & vivid magenta)
   public getPlanet06Texture(): THREE.CanvasTexture {
     if (this.cache.has('p6')) return this.cache.get('p6')!;
     const { canvas, ctx } = this.createCanvas();
 
-    ctx.fillStyle = '#1e1b4b';
+    // Deep cosmic violet background
+    const grad = ctx.createLinearGradient(0, 0, 1024, 512);
+    grad.addColorStop(0, '#3b0764');
+    grad.addColorStop(0.5, '#581c87');
+    grad.addColorStop(1, '#1e1b4b');
+    ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 1024, 512);
 
-    // Synaptic neural network lines
-    ctx.strokeStyle = '#818cf8';
-    ctx.lineWidth = 1.8;
+    // Neon magenta neural clusters
+    ctx.fillStyle = '#ec4899';
+    for (let i = 0; i < 40; i++) {
+      const cx = (i * 103) % 1024;
+      const cy = (i * 71) % 512;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Glowing cyan synapse lines
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2.5;
     for (let i = 0; i < 35; i++) {
-      const x1 = (i * 97) % 1024;
-      const y1 = (i * 61) % 512;
-      const x2 = ((i + 1) * 97 + 80) % 1024;
-      const y2 = ((i + 1) * 61 + 50) % 512;
+      const x1 = (i * 103) % 1024;
+      const y1 = (i * 71) % 512;
+      const x2 = ((i + 1) * 103) % 1024;
+      const y2 = ((i + 1) * 71) % 512;
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
       ctx.stroke();
-
-      // Synapse node dots
-      ctx.fillStyle = '#c7d2fe';
-      ctx.beginPath();
-      ctx.arc(x1, y1, 3.5, 0, Math.PI * 2);
-      ctx.fill();
     }
 
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
     this.cache.set('p6', tex);
     return tex;
   }
 
-  // Planet 07: Terminus-Zero (Pure crystalline facets)
+  // Planet 07: Global Open Source Terminal (Prismatic rainbow diamond facets)
   public getPlanet07Texture(): THREE.CanvasTexture {
     if (this.cache.has('p7')) return this.cache.get('p7')!;
     const { canvas, ctx } = this.createCanvas();
 
-    ctx.fillStyle = '#0f172a';
+    // Multi-spectral prism gradient (Pink, Cyan, Gold, Violet)
+    const grad = ctx.createLinearGradient(0, 0, 1024, 512);
+    grad.addColorStop(0, '#f43f5e');
+    grad.addColorStop(0.25, '#fbbf24');
+    grad.addColorStop(0.5, '#34d399');
+    grad.addColorStop(0.75, '#38bdf8');
+    grad.addColorStop(1, '#c084fc');
+    ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 1024, 512);
 
-    // Prismatic diamond light reflections
-    ctx.strokeStyle = '#38bdf8';
+    // Diamond triangular facets
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
     ctx.lineWidth = 2;
-    for (let i = 0; i < 24; i++) {
-      ctx.beginPath();
-      ctx.moveTo((i * 45) % 1024, 0);
-      ctx.lineTo(((i * 45) + 300) % 1024, 512);
-      ctx.stroke();
+    for (let x = 0; x < 1024; x += 128) {
+      for (let y = 0; y < 512; y += 128) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 128, y + 128);
+        ctx.lineTo(x, y + 128);
+        ctx.closePath();
+        ctx.stroke();
+      }
     }
 
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
     this.cache.set('p7', tex);
     return tex;
   }

@@ -35,8 +35,8 @@ export const CaseFileOverlayPanel: React.FC<CaseFileOverlayPanelProps> = ({
       {/* Top Header Bar */}
       <div className="p-5 border-b border-[#1c222e] bg-[#0f1218]/90 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <span className="font-mono text-xs px-2 py-0.5 rounded bg-[#181d26] text-[#d4883b] border border-[#2d374a] font-bold">
-            STATION 0{caseFile.chapterNumber} OF 0{totalStations}
+          <span className="font-mono text-xs px-2.5 py-1 rounded-lg bg-[#181d26] text-[#d4883b] border border-[#2d374a] font-bold">
+            LANDING ZONE 0{caseFile.chapterNumber}
           </span>
           {isFlagship && (
             <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#d4883b]/20 text-[#d4883b] border border-[#d4883b]/40 font-bold">
@@ -81,8 +81,15 @@ export const CaseFileOverlayPanel: React.FC<CaseFileOverlayPanelProps> = ({
         
         {/* Title & Hook */}
         <div>
-          <span className="text-xs font-mono text-[#7a8494] block mb-1">
-            {caseFile.anonymizedEmployer} • {caseFile.role}
+          <span className="text-xs font-mono text-[#38bdf8] block mb-1">
+            {caseFile.chapterNumber === 1 && "Inventra Technologies & EaseMyTrip"}
+            {caseFile.chapterNumber === 2 && "Daffodil Software Ltd."}
+            {caseFile.chapterNumber === 3 && "TransUnion & Saksoft Ltd. (Security & Vault)"}
+            {caseFile.chapterNumber === 4 && "TransUnion & Saksoft Ltd. (EKS & GitOps)"}
+            {caseFile.chapterNumber === 5 && "Samsung Research Institute (Knox Classroom ★)"}
+            {caseFile.chapterNumber === 6 && "Samsung Research Institute (Agentic AI Lab)"}
+            {caseFile.chapterNumber === 7 && "Open Source Ecosystem & Principal Architecture"}
+            {" • "}{caseFile.role}
           </span>
           <h2 className="font-display text-xl sm:text-2xl font-bold text-[#eeeff2] leading-snug mb-3">
             {caseFile.title}

@@ -3,78 +3,107 @@ import { CareerRole } from '../types';
 export const CAREER_TRAJECTORY: CareerRole[] = [
   {
     period: 'May 2024 – Present',
-    title: 'Chief Engineer',
+    title: 'Chief Systems Engineer / Tech Lead',
     organizationAnonymized: 'Global Consumer-Electronics & Software R&D Institute',
-    organizationRaw: 'Samsung R&D Institute India',
+    organizationRaw: 'Samsung Research Institute',
     category: 'Current Leadership',
-    summary: 'Leading distributed systems architecture and real-time infrastructure engineering for multi-region classroom and collaboration platforms across multi-cloud environments.',
+    summary: 'Spearheading hyper-scale distributed systems, multi-region real-time media meshes, and production agentic AI architectures.',
     bullets: [
-      'Architected and deployed a distributed chat and state engine using .NET Core and Microsoft Orleans, supporting 1,000,000+ active concurrent users with zero distributed locking.',
-      'Integrated Apache Kafka for streaming and event-driven architecture, ensuring high-throughput, fault-tolerant message ordering between 10+ core microservices.',
-      'Designed and implemented custom LiveKit Manager service in Golang to orchestrate WebRTC media servers powering low-latency video/audio classroom interactions.',
-      'Constructed end-to-end multi-region GitOps deployment pipelines using Terraform, GitHub Actions, and ArgoCD on AWS/Azure Kubernetes (EKS/AKS).',
-      'Implemented FoundationDB as an ultra-scalable transactional data store for chat metadata with zero data loss during offline queueing.',
-      'Spearheaded confidential computing workload deployments and AI/MLOps pipelines in Azure.',
-      'Mentored senior engineering staff, established architectural standards, and chaired technical hiring panels.'
+      'Architected in-house Memory-as-a-Service for multi-agent workflows, featuring hybrid persistence (Knowledge Graph + Temporal memory), RBAC access controls, and active memory defense mechanisms.',
+      'Engineered agent execution runtimes using OpenClaw and Hermes frameworks, optimizing dynamic context engineering, agent state management, and tool integration.',
+      'Benchmarked local LLM inference via Ollama; built autonomous prototype agents integrated with local system tools, file environments, and the Model Context Protocol (MCP).',
+      'Spearheaded end-to-end architecture of a multi-region real-time communication platform supporting 1,000,000+ active concurrent users with zero distributed lock contention (Microsoft Orleans & .NET Core).',
+      'Developed custom LiveKit orchestration services in Go, validating and deploying containerized LiveKit Agents on Kubernetes (EKS) for low-latency WebRTC media routing (<45ms).',
+      'Engineered automated multi-region GitOps infrastructure with Terraform, GitHub Actions, and ArgoCD, eliminating manual provisioning overhead and configuration drift.',
+      'Honored with the "Incredible Title Award" (2 Quarters) for exceptional engineering delivery on mission-critical real-time systems.'
     ],
-    tags: ['Microsoft Orleans', 'Golang', '.NET Core', 'LiveKit WebRTC', 'Apache Kafka', 'FoundationDB', 'Kubernetes EKS', 'ArgoCD', 'Terraform', 'Azure MLOps']
+    tags: [
+      'Agentic AI',
+      'Memory-as-a-Service',
+      'MCP',
+      'Ollama',
+      'Hermes / OpenClaw',
+      'Microsoft Orleans',
+      'Golang',
+      'LiveKit WebRTC',
+      '.NET Core',
+      'Kubernetes EKS',
+      'ArgoCD',
+      'Terraform'
+    ]
   },
   {
-    period: 'May 2023 – May 2024',
-    title: 'Lead Engineer / Senior Consultant',
+    period: 'April 2021 – May 2024 (3 yrs 2 mos)',
+    title: 'Lead Platform Engineer / Senior Consultant',
     organizationAnonymized: 'Global Financial Information & Credit Analytics Bureau',
-    organizationRaw: 'TransUnion',
+    organizationRaw: 'TransUnion & Saksoft Ltd.',
     category: 'Enterprise Modernization',
-    summary: 'Drove cloud migration, Kubernetes containerization, and GitOps automation for mission-critical financial information services.',
+    summary: 'Led enterprise cloud migration to AWS EKS with Flux v2 GitOps, HashiCorp Vault dynamic secret governance, and modular Terraform infrastructure.',
     bullets: [
-      'Devised and executed the Kubernetes (EKS) migration strategy incorporating Istio service mesh and Flux v2 GitOps, reducing deployment rollbacks by 90%.',
-      'Authored reusable Terraform modules adopted by 10+ cross-functional teams, reducing cloud infrastructure provisioning time by 80%.',
-      'Built secure, enterprise-grade OAuth2 and OpenID Connect (OIDC) authentication NuGet packages and REST APIs in .NET Core 6 using CQRS and Clean Architecture.',
-      'Architected HashiCorp Vault dynamic secret governance, establishing automated credential rotation across high-compliance banking services.'
+      'Orchestrated enterprise migration to AWS EKS using Flux v2 GitOps and HashiCorp Vault for dynamic secret governance, slashing deployment rollbacks by 90%.',
+      'Authored modular Terraform IaC blueprints adopted by 10+ cross-functional teams, cutting cloud infrastructure spin-up time by 80% (from 3 days to <4 hours).',
+      'Architected enterprise OIDC/OAuth2 authentication microservices and shared NuGet libraries, standardizing secure identity federation across regulated financial systems.',
+      'Built mission-critical REST APIs in .NET Core 6 adhering to CQRS, SOLID principles, and Clean Architecture for high-maintainability financial services.'
     ],
-    tags: ['AWS EKS', 'Flux v2', 'Terraform', 'HashiCorp Vault', 'Istio', '.NET Core 6', 'OAuth2 / OIDC', 'CQRS', 'Azure DevOps']
+    tags: [
+      'AWS EKS',
+      'Flux v2',
+      'Terraform',
+      'HashiCorp Vault',
+      'Istio Mesh',
+      '.NET Core 6',
+      'OAuth2 / OIDC',
+      'CQRS',
+      'Clean Architecture'
+    ]
   },
   {
-    period: 'Apr 2021 – May 2023',
-    title: 'Lead Consultant',
-    organizationAnonymized: 'International Digital Enterprise Consultancy',
-    organizationRaw: 'Saksoft Ltd.',
-    category: 'Cloud Architecture',
-    summary: 'Engineered high-security authorization engines and microservices for international enterprise clients.',
-    bullets: [
-      'Engineered centralized OAuth2 and OpenID Connect authentication frameworks packaged as enterprise NuGet modules.',
-      'Developed scalable REST APIs adhering strictly to SOLID, Clean Architecture, Dependency Injection, and CQRS patterns.',
-      'Configured HashiCorp Vault secret integration and customized auth workflows to meet stringent financial compliance regulations.'
-    ],
-    tags: ['.NET Core', 'C#', 'HashiCorp Vault', 'OAuth2', 'OIDC', 'Microservices', 'SQL Server']
-  },
-  {
-    period: 'Apr 2016 – Apr 2021 (5 Years)',
-    title: 'Senior Associate IT',
+    period: 'April 2016 – April 2021 (5 yrs)',
+    title: 'Senior Associate IT (Tech Lead)',
     organizationAnonymized: 'Enterprise Healthcare Systems & Medical Interoperability Provider',
     organizationRaw: 'Daffodil Software Ltd.',
-    category: 'Award Winner (Project of Year)',
-    summary: 'Designed serverless healthcare platforms and microservice architectures handling 10,000+ concurrent requests.',
+    category: 'Healthcare Cloud Architecture',
+    summary: 'Architected serverless healthcare platforms on AWS and engineered custom FHIR servers maintaining 99.99% SLA.',
     bullets: [
-      'Designed and implemented serverless healthcare architecture using AWS Lambda, Cognito, API Gateway, CloudWatch, and S3, maintaining 99.99% SLA.',
-      'Built custom FHIR (Fast Healthcare Interoperability Resources) servers compliant with strict healthcare regulatory standards.',
-      'Migrated enterprise standalone services to modern .NET Core, delivering a 40% performance improvement and 50% reduction in maintenance overhead.',
-      'Awarded \'Project of the Year\' (2017) and \'Process Oriented Award\' (2018) for outstanding engineering standards and CI/CD automation.'
+      'Modernized legacy monolithic services to .NET Core, boosting overall throughput and reducing ongoing maintenance overhead by 50%.',
+      'Architected serverless AWS solutions (Lambda, API Gateway, S3, Cognito, CloudWatch), achieving 99.99% uptime SLA for mission-critical electronic health record (EHR) platforms.',
+      'Engineered custom FHIR-compliant API servers, ensuring strict HIPAA healthcare data interoperability and regulatory compliance.',
+      'Received Innovation Award (Q2 2018) for developing an enterprise AI chatbot with Dialogflow, alongside Project of the Year and Process Oriented Award (2017, 2018).'
     ],
-    tags: ['AWS Lambda', 'AWS Cognito', 'API Gateway', 'HL7 FHIR', '.NET Core', 'Docker', 'AWS S3', 'CloudWatch']
+    tags: [
+      'AWS Lambda',
+      'AWS Cognito',
+      'API Gateway',
+      'HL7 FHIR',
+      'HIPAA Compliance',
+      '.NET Core',
+      'Docker',
+      'CloudWatch',
+      'Dialogflow AI'
+    ]
   },
   {
-    period: 'Aug 2013 – Mar 2016',
-    title: 'Software Developer & Web Engineer',
+    period: 'August 2013 – March 2016 (2 yrs 7 mos)',
+    title: 'Software Developer / Web Engineer',
     organizationAnonymized: 'National Travel & Flight Booking Aggregator',
     organizationRaw: 'Inventra Technologies & EaseMyTrip',
     category: 'Foundational Scale',
-    summary: 'Developed high-traffic B2B/B2C travel booking engines and optimized database throughput for 100,000+ concurrent users.',
+    summary: 'Built high-volume B2B travel booking engines and optimized database throughput for 100,000+ monthly transactions.',
     bullets: [
-      'Developed B2B travel booking engine integrated with Amadeus and white-label flight APIs, boosting conversion rates by 20%.',
-      'Architected MongoDB document schemas across 100+ collections and tuned SQL queries/stored procedures, decreasing data retrieval latency by 40-50%.',
-      'Honored as \'Employee of the Year\' (2015) at Inventra Technologies.'
+      'Built high-volume B2B travel booking engines (MongoDB, SQL Server, WCF), supporting 100,000+ monthly transactions and driving a 20% increase in active user engagement.',
+      'Tuned complex SQL queries, stored procedures, and schema indexing, reducing database query execution latency by 40–50%.',
+      'Integrated third-party airline reservation APIs (Amadeus, Air Costa) into automated booking and ticketing workflows.',
+      'Honored as "Employee of the Year" (2015) for high-impact contributions to core booking infrastructure.'
     ],
-    tags: ['C#', 'ASP.NET', 'MongoDB', 'SQL Server', 'Amadeus API', 'High-Volume Travel Systems']
+    tags: [
+      'C#',
+      'ASP.NET',
+      'MongoDB',
+      'SQL Server',
+      'Amadeus Flight API',
+      'Air Costa API',
+      'WCF',
+      'High-Volume Travel'
+    ]
   }
 ];

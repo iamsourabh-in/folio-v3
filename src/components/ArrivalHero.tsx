@@ -22,7 +22,7 @@ export const ArrivalHero: React.FC<ArrivalHeroProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#12151c] border border-[#202735] text-xs font-mono text-[#d4883b]">
             <span className="w-2 h-2 rounded-full bg-[#d4883b] animate-ping"></span>
-            <span>CORRIDOR LOG: 12+ YEARS CONTINUOUS ARCHITECTURAL OWNERSHIP</span>
+            <span>CORRIDOR LOG: 13+ YEARS CONTINUOUS ARCHITECTURAL OWNERSHIP</span>
           </div>
 
           <div className="flex items-center gap-2 text-xs font-mono text-[#7a8494]">
@@ -34,11 +34,11 @@ export const ArrivalHero: React.FC<ArrivalHeroProps> = ({
         {/* Hero Title & Lead Positioning Statement */}
         <div className="max-w-4xl">
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#eeeff2] leading-[1.15] mb-5">
-            Systems Architecture, Real-Time Media, and Distributed Actors at Scale.
+            Chief Systems &amp; Cloud-Native Architect // Agentic AI &amp; Platform Engineering.
           </h1>
           
           <p className="font-sans text-base sm:text-lg text-[#9aa4b5] leading-relaxed mb-8">
-            I am <strong className="text-[#eeeff2] font-semibold">Sourabh Rustagi</strong>, a Lead Engineer and Systems Architect with 12+ years of continuous ownership across distributed backends, low-latency WebRTC infrastructure, and high-concurrency cloud platforms. Currently Chief Engineer architecting real-time classroom systems serving <strong className="text-[#d4883b] font-semibold">1,000,000+ active concurrent users</strong> with Microsoft Orleans virtual actors and zero distributed locking.
+            I am <strong className="text-[#eeeff2] font-semibold">Sourabh Rustagi</strong>, Chief Systems Engineer &amp; Cloud-Native Architect with 13+ years of experience engineering hyper-scale distributed systems, real-time media meshes, and agentic AI platforms. Currently at <strong className="text-[#eeeff2] font-semibold">Samsung Research Institute</strong> architecting in-house Memory-as-a-Service (Knowledge Graph + Temporal memory, MCP) and real-time infrastructure serving <strong className="text-[#d4883b] font-semibold">1,000,000+ active concurrent users</strong> with Microsoft Orleans virtual actors and zero distributed locking.
           </p>
 
           {/* Key Architect Pillars */}
@@ -53,30 +53,30 @@ export const ArrivalHero: React.FC<ArrivalHeroProps> = ({
             </div>
 
             <div className="p-3.5 rounded bg-[#12151c] border border-[#202735] hover:border-[#2d374a] transition-colors">
+              <div className="flex items-center gap-2 text-[#a855f7] text-xs font-mono mb-1">
+                <Layers className="w-4 h-4" />
+                <span>AGENTIC AI</span>
+              </div>
+              <div className="text-xl font-display font-bold text-[#eeeff2]">Memory + MCP</div>
+              <div className="text-[11px] font-mono text-[#7a8494] mt-0.5">Knowledge Graph + Temporal</div>
+            </div>
+
+            <div className="p-3.5 rounded bg-[#12151c] border border-[#202735] hover:border-[#2d374a] transition-colors">
               <div className="flex items-center gap-2 text-[#38bdf8] text-xs font-mono mb-1">
                 <Zap className="w-4 h-4" />
                 <span>WEBRTC MEDIA</span>
               </div>
-              <div className="text-xl font-display font-bold text-[#eeeff2]">&lt; 120ms</div>
-              <div className="text-[11px] font-mono text-[#7a8494] mt-0.5">Global media transit latency</div>
+              <div className="text-xl font-display font-bold text-[#eeeff2]">&lt; 45ms</div>
+              <div className="text-[11px] font-mono text-[#7a8494] mt-0.5">LiveKit Go SFU routing</div>
             </div>
 
             <div className="p-3.5 rounded bg-[#12151c] border border-[#202735] hover:border-[#2d374a] transition-colors">
-              <div className="flex items-center gap-2 text-emerald-400 text-xs font-mono mb-1">
+              <div className="flex items-center gap-2 text-[#10b981] text-xs font-mono mb-1">
                 <ShieldCheck className="w-4 h-4" />
                 <span>GITOPS MESH</span>
               </div>
               <div className="text-xl font-display font-bold text-[#eeeff2]">90% Cut</div>
-              <div className="text-[11px] font-mono text-[#7a8494] mt-0.5">Deployment rollbacks with Flux v2</div>
-            </div>
-
-            <div className="p-3.5 rounded bg-[#12151c] border border-[#202735] hover:border-[#2d374a] transition-colors">
-              <div className="flex items-center gap-2 text-amber-300 text-xs font-mono mb-1">
-                <Layers className="w-4 h-4" />
-                <span>OPEN SOURCE</span>
-              </div>
-              <div className="text-xl font-display font-bold text-[#eeeff2]">28,500+</div>
-              <div className="text-[11px] font-mono text-[#7a8494] mt-0.5">Zero-dependency npm downloads</div>
+              <div className="text-[11px] font-mono text-[#7a8494] mt-0.5">Rollbacks via Flux v2 &amp; EKS</div>
             </div>
           </div>
 

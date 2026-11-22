@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { PLANETS_META } from '../data/planetData';
 import { planetTextures } from '../utils/proceduralPlanetTextures';
 import { AsteroidBelt } from './AsteroidBelt';
+import { LandingZonePad } from './LandingZonePad';
 
 interface CosmicPlanetsProps {
   shipPos: THREE.Vector3;
@@ -13,14 +14,14 @@ interface CosmicPlanetsProps {
 }
 
 // -------------------------------------------------------------
-// ULTRA-REALISTIC PLANETARY CELESTIAL BODIES
+// ULTRA-REALISTIC & VIBRANT PLANETARY CELESTIAL BODIES
 // -------------------------------------------------------------
 
 // Atmospheric Rim Glow Component
-function AtmosphereGlow({ radius, color, opacity = 0.25 }: { radius: number; color: string; opacity?: number }) {
+function AtmosphereGlow({ radius, color, opacity = 0.35 }: { radius: number; color: string; opacity?: number }) {
   return (
     <mesh>
-      <sphereGeometry args={[radius * 1.12, 32, 32]} />
+      <sphereGeometry args={[radius * 1.14, 32, 32]} />
       <meshBasicMaterial 
         color={color} 
         transparent 
@@ -32,7 +33,7 @@ function AtmosphereGlow({ radius, color, opacity = 0.25 }: { radius: number; col
   );
 }
 
-// Planet 01: Ingress-Prime (B2B Travel Booking & High-Throughput Aggregator)
+// Planet 01: Inventra & EaseMyTrip (B2B Travel Booking & High-Throughput Aggregator)
 function Planet01({ isTargeted }: { isTargeted: boolean }) {
   const ringsRef = useRef<THREE.Group>(null);
   const planetRef = useRef<THREE.Mesh>(null);
@@ -51,21 +52,21 @@ function Planet01({ isTargeted }: { isTargeted: boolean }) {
         <sphereGeometry args={[2.5, 48, 48]} />
         <meshStandardMaterial 
           map={texture}
-          roughness={0.7} 
-          metalness={0.3} 
-          emissive="#78350f"
-          emissiveIntensity={isTargeted ? 0.35 : 0.15}
+          roughness={0.65} 
+          metalness={0.35} 
+          emissive="#b45309"
+          emissiveIntensity={isTargeted ? 0.45 : 0.2}
         />
       </mesh>
 
       {/* Atmospheric Scattering Glow */}
-      <AtmosphereGlow radius={2.5} color="#d4883b" opacity={0.3} />
+      <AtmosphereGlow radius={2.5} color="#f59e0b" opacity={0.4} />
 
-      {/* Planetary Data Rings with Orbiting Moons */}
+      {/* Planetary Data Rings with Orbiting Booking Flight Moons */}
       <group ref={ringsRef} rotation={[0.45, 0.2, 0]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[3.6, 4.4, 48]} />
-          <meshBasicMaterial color="#d4883b" side={THREE.DoubleSide} transparent opacity={0.55} />
+          <meshBasicMaterial color="#f59e0b" side={THREE.DoubleSide} transparent opacity={0.6} />
         </mesh>
         {[0, 1, 2, 3].map((i) => {
           const angle = (i * Math.PI * 2) / 4;
@@ -84,7 +85,7 @@ function Planet01({ isTargeted }: { isTargeted: boolean }) {
   );
 }
 
-// Planet 02: Crypt-FHIR (Healthcare Serverless Interoperability)
+// Planet 02: Daffodil Software (Healthcare Serverless Interoperability & FHIR)
 function Planet02({ isTargeted }: { isTargeted: boolean }) {
   const shieldCage = useRef<THREE.Group>(null);
   const planetRef = useRef<THREE.Mesh>(null);
@@ -101,265 +102,260 @@ function Planet02({ isTargeted }: { isTargeted: boolean }) {
 
   return (
     <group>
-      {/* Textured Oceanic Teal Planet */}
       <mesh ref={planetRef}>
         <sphereGeometry args={[2.3, 48, 48]} />
         <meshStandardMaterial 
           map={texture}
-          roughness={0.4} 
-          metalness={0.6} 
+          roughness={0.45} 
+          metalness={0.5} 
           emissive="#0d9488"
-          emissiveIntensity={isTargeted ? 0.35 : 0.15}
+          emissiveIntensity={isTargeted ? 0.45 : 0.2}
         />
       </mesh>
 
-      {/* Atmospheric Scattering Glow */}
-      <AtmosphereGlow radius={2.3} color="#2dd4bf" opacity={0.35} />
+      <AtmosphereGlow radius={2.3} color="#10b981" opacity={0.45} />
 
-      {/* Rotating Hexagonal HIPAA Defense Shield Cage */}
+      {/* Revolving Hexagonal Security Shield Cage */}
       <group ref={shieldCage}>
         <mesh>
           <icosahedronGeometry args={[3.2, 1]} />
-          <meshBasicMaterial color="#2dd4bf" wireframe transparent opacity={0.45} />
+          <meshBasicMaterial color="#10b981" wireframe transparent opacity={0.5} />
         </mesh>
+        {[0, 1, 2].map((i) => {
+          const a = (i * Math.PI * 2) / 3;
+          return (
+            <mesh key={i} position={[Math.cos(a) * 3.4, Math.sin(a) * 1.5, Math.sin(a) * 3.4]}>
+              <octahedronGeometry args={[0.18]} />
+              <meshBasicMaterial color="#67e8f9" />
+            </mesh>
+          );
+        })}
       </group>
     </group>
   );
 }
 
-// Planet 03: Vault-9 (Dynamic Secrets & Cryptographic Relay)
+// Planet 03: TransUnion Vault (Dynamic Secret Governance & Mechanical Locking Rings)
 function Planet03({ isTargeted }: { isTargeted: boolean }) {
-  const gears = useRef<THREE.Group>(null);
+  const gear1 = useRef<THREE.Group>(null);
+  const gear2 = useRef<THREE.Group>(null);
   const planetRef = useRef<THREE.Mesh>(null);
   const texture = planetTextures.getPlanet03Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    if (gears.current) gears.current.rotation.z = t * 0.35;
+    if (gear1.current) gear1.current.rotation.z = t * 0.35;
+    if (gear2.current) gear2.current.rotation.x = -t * 0.25;
     if (planetRef.current) planetRef.current.rotation.y = t * 0.08;
   });
 
   return (
     <group>
-      {/* Obsidian Basalt Planet with Circuit Grids */}
+      {/* Obsidian Sphere */}
       <mesh ref={planetRef}>
         <sphereGeometry args={[2.6, 48, 48]} />
         <meshStandardMaterial 
           map={texture}
           roughness={0.3} 
-          metalness={0.85} 
-          emissive="#b45309"
-          emissiveIntensity={isTargeted ? 0.3 : 0.1}
+          metalness={0.9} 
+          emissive="#ca8a04"
+          emissiveIntensity={isTargeted ? 0.4 : 0.15}
         />
       </mesh>
 
-      {/* Atmosphere Glow */}
-      <AtmosphereGlow radius={2.6} color="#f59e0b" opacity={0.25} />
+      <AtmosphereGlow radius={2.6} color="#eab308" opacity={0.4} />
 
-      {/* Interlocking Planetary Gear Rings with Notch Teeth */}
-      <group ref={gears} rotation={[0.4, 0.2, 0]}>
+      {/* Outer Gear Ring 1 */}
+      <group ref={gear1} rotation={[0.3, 0.4, 0]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[3.6, 4.3, 36]} />
-          <meshStandardMaterial color="#d97706" metalness={0.9} roughness={0.2} side={THREE.DoubleSide} />
+          <ringGeometry args={[3.6, 4.3, 16]} />
+          <meshStandardMaterial color="#eab308" metalness={0.9} roughness={0.2} side={THREE.DoubleSide} />
         </mesh>
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
-          const angle = (i * Math.PI * 2) / 8;
-          return (
-            <mesh key={i} position={[Math.cos(angle) * 4.4, 0, Math.sin(angle) * 4.4]}>
-              <boxGeometry args={[0.35, 0.18, 0.18]} />
-              <meshStandardMaterial color="#f59e0b" metalness={0.9} />
-            </mesh>
-          );
-        })}
       </group>
 
-      <AsteroidBelt center={[0, 0, 0]} innerRadius={5.6} outerRadius={7.8} count={70} />
+      {/* Orthogonal Gear Ring 2 */}
+      <group ref={gear2} rotation={[-0.4, 0.2, 0]}>
+        <mesh>
+          <ringGeometry args={[4.5, 5.0, 16]} />
+          <meshStandardMaterial color="#f97316" metalness={0.85} roughness={0.3} side={THREE.DoubleSide} transparent opacity={0.75} />
+        </mesh>
+      </group>
+
+      <AsteroidBelt center={[0, 0, 0]} innerRadius={5.8} outerRadius={7.5} count={50} />
     </group>
   );
 }
 
-// Planet 04: GitOps-Gateway (Binary Twin Planet System)
+// Planet 04: TransUnion Platform (AWS EKS & Flux v2 Dual Binary Worlds)
 function Planet04({ isTargeted }: { isTargeted: boolean }) {
-  const binaryGroup = useRef<THREE.Group>(null);
+  const binaryPair = useRef<THREE.Group>(null);
+  const plasmaBridge = useRef<THREE.Mesh>(null);
   const texture = planetTextures.getPlanet04Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    if (binaryGroup.current) {
-      binaryGroup.current.rotation.y = t * 0.5;
+    if (binaryPair.current) binaryPair.current.rotation.y = t * 0.3;
+    if (plasmaBridge.current) {
+      plasmaBridge.current.rotation.z = t * 2.0;
     }
   });
 
   return (
-    <group ref={binaryGroup}>
-      {/* Primary Production 90% Planet (Emerald) */}
-      <mesh position={[-2.4, 0, 0]}>
-        <sphereGeometry args={[1.7, 36, 36]} />
-        <meshStandardMaterial 
-          map={texture} 
-          roughness={0.5} 
-          metalness={0.5} 
-          emissive="#059669" 
-          emissiveIntensity={isTargeted ? 0.45 : 0.2} 
-        />
-      </mesh>
-      <group position={[-2.4, 0, 0]}>
-        <AtmosphereGlow radius={1.7} color="#10b981" opacity={0.3} />
-      </group>
+    <group>
+      {/* Binary Orbit Group */}
+      <group ref={binaryPair}>
+        {/* World A: 90% Production Stable (Emerald) */}
+        <mesh position={[-2.4, 0, 0]}>
+          <sphereGeometry args={[1.5, 32, 32]} />
+          <meshStandardMaterial 
+            map={texture}
+            roughness={0.4} 
+            metalness={0.6} 
+            emissive="#15803d"
+            emissiveIntensity={isTargeted ? 0.5 : 0.25}
+          />
+        </mesh>
+        <AtmosphereGlow radius={1.5} color="#22c55e" opacity={0.4} />
 
-      {/* Canary 10% Companion Planet (Cyan) */}
-      <mesh position={[2.4, 0, 0]}>
-        <sphereGeometry args={[1.1, 32, 32]} />
-        <meshStandardMaterial 
-          color="#0284c7" 
-          roughness={0.3} 
-          metalness={0.7} 
-          emissive="#38bdf8" 
-          emissiveIntensity={isTargeted ? 0.5 : 0.25} 
-        />
-      </mesh>
-      <group position={[2.4, 0, 0]}>
-        <AtmosphereGlow radius={1.1} color="#38bdf8" opacity={0.35} />
-      </group>
+        {/* World B: 10% Canary Istio Testbed (Cobalt Azure) */}
+        <mesh position={[2.4, 0, 0]}>
+          <sphereGeometry args={[1.1, 32, 32]} />
+          <meshStandardMaterial 
+            color="#0ea5e9" 
+            emissive="#0284c7" 
+            emissiveIntensity={isTargeted ? 0.6 : 0.3} 
+            roughness={0.4} 
+            metalness={0.6} 
+          />
+        </mesh>
+        <AtmosphereGlow radius={1.1} color="#38bdf8" opacity={0.4} />
 
-      {/* High-Energy Plasma Conduit Bridge */}
-      <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.06, 0.06, 4.8, 8]} />
-        <meshBasicMaterial color="#34d399" transparent opacity={0.8} />
-      </mesh>
+        {/* Dynamic Plasma Traffic Bridge linking the two worlds */}
+        <mesh ref={plasmaBridge} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.08, 0.08, 4.8, 12]} />
+          <meshBasicMaterial color="#38bdf8" transparent opacity={0.8} />
+        </mesh>
+      </group>
     </group>
   );
 }
 
-// Planet 05: Orleans-Prime (FLAGSHIP ★ - 1M+ Virtual Actor Silo & LiveKit WebRTC)
+// Planet 05: Samsung Knox Flagship ★ (Hyper-Scale Virtual Actors & WebRTC Core)
 function Planet05({ isTargeted }: { isTargeted: boolean }) {
-  const grainRing1 = useRef<THREE.Group>(null);
-  const grainRing2 = useRef<THREE.Group>(null);
-  const grainRing3 = useRef<THREE.Group>(null);
-  const polarBeam = useRef<THREE.Mesh>(null);
+  const actorCloudRef = useRef<THREE.Group>(null);
+  const auroraNorth = useRef<THREE.Mesh>(null);
   const planetRef = useRef<THREE.Mesh>(null);
   const texture = planetTextures.getPlanet05Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    if (grainRing1.current) grainRing1.current.rotation.y = t * 0.6;
-    if (grainRing2.current) grainRing2.current.rotation.y = -t * 0.45;
-    if (grainRing3.current) grainRing3.current.rotation.y = t * 0.3;
-    if (polarBeam.current) polarBeam.current.rotation.y = t * 0.2;
-    if (planetRef.current) planetRef.current.rotation.y = t * 0.05;
+    if (planetRef.current) planetRef.current.rotation.y = t * 0.15;
+    if (actorCloudRef.current) actorCloudRef.current.rotation.y = -t * 0.25;
+    if (auroraNorth.current) {
+      auroraNorth.current.rotation.z = t * 0.6;
+      auroraNorth.current.scale.set(
+        1.0 + Math.sin(t * 2) * 0.05,
+        1.0 + Math.cos(t * 2) * 0.05,
+        1.0
+      );
+    }
   });
 
   return (
     <group>
-      {/* Colossal Jupiter-Scale Gas Giant with Rich Cloud Bands & Storms */}
+      {/* Colossal Gas Giant Sphere with Jupiter Storm Bands */}
       <mesh ref={planetRef}>
         <sphereGeometry args={[3.8, 64, 64]} />
         <meshStandardMaterial 
           map={texture}
-          roughness={0.4} 
-          metalness={0.4} 
-          emissive="#92400e"
-          emissiveIntensity={isTargeted ? 0.4 : 0.18}
+          roughness={0.35} 
+          metalness={0.5} 
+          emissive="#1d4ed8"
+          emissiveIntensity={isTargeted ? 0.45 : 0.2}
         />
       </mesh>
 
-      {/* Multi-Layered Atmospheric Rayleigh Scattering Glow */}
-      <AtmosphereGlow radius={3.8} color="#f59e0b" opacity={0.4} />
+      <AtmosphereGlow radius={3.8} color="#3b82f6" opacity={0.45} />
 
-      {/* Polar Hyper-Dense Photon Energy Beams */}
-      <mesh ref={polarBeam} position={[0, 0, 0]}>
-        <cylinderGeometry args={[0.12, 0.22, 16, 12]} />
-        <meshBasicMaterial color="#fbbf24" transparent opacity={0.65} />
+      {/* Swirling WebRTC North Polar Aurora Ribbon */}
+      <mesh ref={auroraNorth} position={[0, 3.8, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[1.2, 0.15, 16, 48]} />
+        <meshBasicMaterial color="#60a5fa" transparent opacity={0.8} blending={THREE.AdditiveBlending} />
       </mesh>
 
-      {/* Level 1 Rings: 8 Fast Orbiting Classroom Actor Grains */}
-      <group ref={grainRing1}>
+      {/* Ring of 1,000,000+ Virtual Actor Grain Satellites */}
+      <group ref={actorCloudRef} rotation={[0.3, 0.1, 0]}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[5.2, 6.4, 48]} />
+          <meshBasicMaterial color="#fbbf24" side={THREE.DoubleSide} transparent opacity={0.65} />
+        </mesh>
         {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
           const angle = (i * Math.PI * 2) / 8;
           return (
-            <mesh key={i} position={[Math.cos(angle) * 5.4, 0, Math.sin(angle) * 5.4]}>
-              <boxGeometry args={[0.3, 0.3, 0.3]} />
-              <meshStandardMaterial color="#fef08a" emissive="#d4883b" emissiveIntensity={2.0} />
+            <mesh key={i} position={[Math.cos(angle) * 5.8, Math.sin(angle * 2) * 0.3, Math.sin(angle) * 5.8]}>
+              <sphereGeometry args={[0.2, 12, 12]} />
+              <meshBasicMaterial color={i % 2 === 0 ? "#ffffff" : "#fbbf24"} />
             </mesh>
           );
         })}
       </group>
 
-      {/* Level 2 Rings: 12 WebRTC Participant Grains (Inclined 25°) */}
-      <group ref={grainRing2} rotation={[0.38, 0, 0.25]}>
-        <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[6.5, 7.2, 48]} />
-          <meshBasicMaterial color="#38bdf8" transparent opacity={0.4} side={THREE.DoubleSide} />
-        </mesh>
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => {
-          const angle = (i * Math.PI * 2) / 12;
-          return (
-            <mesh key={i} position={[Math.cos(angle) * 6.85, 0, Math.sin(angle) * 6.85]}>
-              <octahedronGeometry args={[0.22]} />
-              <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={1.8} />
-            </mesh>
-          );
-        })}
-      </group>
-
-      {/* Level 3 Rings: Event Coordinator Grain Monoliths */}
-      <group ref={grainRing3} rotation={[-0.32, 0, -0.2]}>
-        {[0, 1, 2, 3, 4].map((i) => {
-          const angle = (i * Math.PI * 2) / 5;
-          return (
-            <mesh key={i} position={[Math.cos(angle) * 8.2, 0, Math.sin(angle) * 8.2]}>
-              <dodecahedronGeometry args={[0.25]} />
-              <meshStandardMaterial color="#ffffff" emissive="#f59e0b" emissiveIntensity={1.4} />
-            </mesh>
-          );
-        })}
-      </group>
-
-      {/* Dense Outer Planetary Asteroid Debris Ring */}
-      <AsteroidBelt center={[0, 0, 0]} innerRadius={9.2} outerRadius={12.0} count={100} />
+      <AsteroidBelt center={[0, 0, 0]} innerRadius={7.2} outerRadius={9.5} count={80} />
     </group>
   );
 }
 
-// Planet 06: Nexus-Agentis (Autonomous Multi-Agent Swarm)
+// Planet 06: Samsung AI Research Lab (Agentic AI, Memory-as-a-Service & MCP)
 function Planet06({ isTargeted }: { isTargeted: boolean }) {
-  const planetRef = useRef<THREE.Mesh>(null);
-  const agentRing = useRef<THREE.Group>(null);
+  const probes = useRef<THREE.Group>(null);
+  const coreRef = useRef<THREE.Mesh>(null);
   const texture = planetTextures.getPlanet06Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    if (planetRef.current) planetRef.current.rotation.y = t * 0.15;
-    if (agentRing.current) agentRing.current.rotation.y = -t * 0.45;
+    if (coreRef.current) {
+      coreRef.current.rotation.x = t * 0.15;
+      coreRef.current.rotation.y = t * 0.2;
+    }
+    if (probes.current) {
+      probes.current.rotation.y = -t * 0.3;
+    }
   });
 
   return (
     <group>
-      {/* Faceted Neural Synaptic Planet */}
-      <mesh ref={planetRef}>
-        <sphereGeometry args={[2.5, 48, 48]} />
+      {/* Geometric Icosahedron Core */}
+      <mesh ref={coreRef}>
+        <icosahedronGeometry args={[2.5, 1]} />
         <meshStandardMaterial 
           map={texture}
-          roughness={0.3} 
-          metalness={0.7} 
-          emissive="#4338ca"
-          emissiveIntensity={isTargeted ? 0.4 : 0.18}
+          roughness={0.25} 
+          metalness={0.8} 
+          emissive="#7e22ce"
+          emissiveIntensity={isTargeted ? 0.6 : 0.25}
         />
       </mesh>
 
-      <AtmosphereGlow radius={2.5} color="#818cf8" opacity={0.35} />
+      <AtmosphereGlow radius={2.5} color="#a855f7" opacity={0.45} />
 
-      {/* 3 Orbiting Agent Probes Exchanging Laser Triangles */}
-      <group ref={agentRing}>
+      {/* 3 Autonomous Agent Satellite Probes Exchanging Laser Triangles */}
+      <group ref={probes}>
         {[0, 1, 2].map((i) => {
-          const angle = (i * Math.PI * 2) / 3;
-          const r = 4.2;
-          const agentColors = ["#f59e0b", "#38bdf8", "#10b981"];
+          const a = (i * Math.PI * 2) / 3;
+          const px = Math.cos(a) * 4.2;
+          const pz = Math.sin(a) * 4.2;
           return (
-            <mesh key={i} position={[Math.cos(angle) * r, 0.4, Math.sin(angle) * r]}>
-              <octahedronGeometry args={[0.3]} />
-              <meshStandardMaterial color={agentColors[i]} emissive={agentColors[i]} emissiveIntensity={1.3} />
-            </mesh>
+            <group key={i} position={[px, 0, pz]}>
+              <mesh>
+                <dodecahedronGeometry args={[0.28]} />
+                <meshBasicMaterial color="#ec4899" />
+              </mesh>
+              {/* Laser line to core */}
+              <mesh position={[-px / 2, 0, -pz / 2]} rotation={[0, -a, 0]}>
+                <boxGeometry args={[4.2, 0.03, 0.03]} />
+                <meshBasicMaterial color="#38bdf8" transparent opacity={0.75} />
+              </mesh>
+            </group>
           );
         })}
       </group>
@@ -367,7 +363,7 @@ function Planet06({ isTargeted }: { isTargeted: boolean }) {
   );
 }
 
-// Planet 07: Terminus-Zero (Zero-Bloat Maintainer Monolith)
+// Planet 07: Global Open Source Terminal (Prismatic Rainbow Diamond & Resonance Waves)
 function Planet07({ isTargeted }: { isTargeted: boolean }) {
   const crystalRef = useRef<THREE.Mesh>(null);
   const pulseRing = useRef<THREE.Mesh>(null);
@@ -395,24 +391,24 @@ function Planet07({ isTargeted }: { isTargeted: boolean }) {
           map={texture}
           roughness={0.05} 
           metalness={0.95} 
-          emissive="#38bdf8"
+          emissive="#f43f5e"
           emissiveIntensity={isTargeted ? 0.7 : 0.25}
         />
       </mesh>
 
-      <AtmosphereGlow radius={2.6} color="#38bdf8" opacity={0.4} />
+      <AtmosphereGlow radius={2.6} color="#38bdf8" opacity={0.45} />
 
       {/* Expanding Zero-Bloat Harmonic Pulse Wave */}
       <mesh ref={pulseRing} rotation={[Math.PI / 2, 0, 0]}>
         <ringGeometry args={[3.2, 3.4, 48]} />
-        <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} transparent opacity={0.65} />
+        <meshBasicMaterial color="#f43f5e" side={THREE.DoubleSide} transparent opacity={0.65} />
       </mesh>
     </group>
   );
 }
 
 // -------------------------------------------------------------
-// PLANETARY SYSTEM CONTAINER
+// PLANETARY SYSTEM CONTAINER WITH DEDICATED LANDING ZONES
 // -------------------------------------------------------------
 
 export const CosmicPlanets: React.FC<CosmicPlanetsProps> = ({
@@ -429,16 +425,12 @@ export const CosmicPlanets: React.FC<CosmicPlanetsProps> = ({
           <group 
             key={planet.id} 
             position={planet.coordinates}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelectPlanet(idx);
-            }}
           >
-            {/* Dedicated Point Light per Planet casting realistic planetary illumination */}
+            {/* Dedicated Point Light per Planet casting vibrant planetary illumination */}
             <pointLight 
               color={planet.primaryColor} 
-              intensity={isTargeted ? 5.0 : 2.5} 
-              distance={35} 
+              intensity={isTargeted ? 5.5 : 3.0} 
+              distance={40} 
             />
 
             {/* Render High-Fidelity Planet Geometry */}
@@ -450,7 +442,14 @@ export const CosmicPlanets: React.FC<CosmicPlanetsProps> = ({
             {idx === 5 && <Planet06 isTargeted={isTargeted} />}
             {idx === 6 && <Planet07 isTargeted={isTargeted} />}
 
-            {/* In-World 3D Docking Marker */}
+            {/* In-World 3D Company Landing Zone Pad */}
+            <LandingZonePad
+              planet={planet}
+              isTargeted={isTargeted}
+              onLand={() => onSelectPlanet(idx)}
+            />
+
+            {/* Upper Orbit Beacon Label */}
             <Html 
               position={[0, planet.radius + 2.2, 0]} 
               center 

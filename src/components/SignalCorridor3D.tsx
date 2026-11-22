@@ -7,6 +7,7 @@ import { PLANETS_META } from '../data/planetData';
 import { SpaceshipFlightRig } from './SpaceshipFlightRig';
 import { CosmicPlanets } from './CosmicPlanets';
 import { GalacticWaypoints } from './GalacticWaypoints';
+import { CosmicNebulaClouds } from './CosmicNebulaClouds';
 import { SpaceshipCockpitHUD } from './SpaceshipCockpitHUD';
 import { CaseFileOverlayPanel } from './CaseFileOverlayPanel';
 import { MissionFinaleModal } from './MissionFinaleModal';
@@ -201,24 +202,31 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
         dpr={[1, 1.5]}
         gl={{ 
           toneMapping: THREE.ACESFilmicToneMapping, 
-          toneMappingExposure: 1.35,
+          toneMappingExposure: 1.4,
           powerPreference: 'high-performance', 
           antialias: true 
         }}
         onCreated={({ scene }) => {
-          scene.fog = new THREE.FogExp2('#030508', 0.0035);
+          scene.fog = new THREE.FogExp2('#05070e', 0.003);
         }}
       >
-        {/* Photorealistic Cosmic Sunlight & Rim Lighting */}
-        <ambientLight intensity={0.5} />
+        {/* Vibrant Cosmic Sunlight & Multi-Color Fill / Rim Lighting */}
+        <ambientLight intensity={0.6} color="#1e1b4b" />
         <directionalLight position={[120, 100, 100]} intensity={2.8} color="#fff6e5" castShadow />
-        <directionalLight position={[-100, -60, -50]} intensity={0.8} color="#38bdf8" />
+        <directionalLight position={[-100, -60, -50]} intensity={1.3} color="#38bdf8" />
+        <directionalLight position={[80, -40, 200]} intensity={1.1} color="#c084fc" />
+        <directionalLight position={[-70, 50, 100]} intensity={0.9} color="#10b981" />
 
-        {/* 6000 Deep Cosmic Stars */}
-        <Stars radius={200} depth={100} count={6000} factor={4.5} saturation={0} fade speed={1.2} />
+        {/* 7000 Deep Cosmic Stars with Vivid Color Saturation */}
+        <Stars radius={220} depth={100} count={7000} factor={4.8} saturation={1.8} fade speed={1.2} />
 
-        {/* Floating Cosmic Plasma & Stardust Motes */}
-        <Sparkles count={120} scale={150} size={2.8} speed={0.35} color="#38bdf8" opacity={0.4} />
+        {/* Floating Multi-Color Cosmic Plasma & Stardust Motes */}
+        <Sparkles count={90} scale={160} size={2.8} speed={0.35} color="#38bdf8" opacity={0.5} />
+        <Sparkles count={80} scale={150} size={2.5} speed={0.4} color="#fbbf24" opacity={0.45} />
+        <Sparkles count={70} scale={150} size={2.6} speed={0.3} color="#c084fc" opacity={0.4} />
+
+        {/* Volumetric Cosmic Nebula Clouds (Violet, Cyan, Amber, Cobalt, Magenta) */}
+        <CosmicNebulaClouds />
 
         {/* Galactic Waypoints & Space Gates along Corridor */}
         <GalacticWaypoints />

@@ -10,7 +10,7 @@
 ![Sourabh Rustagi — 3D Cosmic Flight Simulator](./public/screenshot-3d.png)
 
 A dual-mode systems engineering portfolio engineered with zero bloat:
-1. **Spaceship Cosmic Flight Simulator (3D Mode):** Pilot an aerospace scout ship in 3D space along a galactic corridor where 7 celestial megastructure planets represent real-world architectural milestones. Approach or target any planet to trigger **"Achievement Unlocked"** fanfare and scan its **Planetary Architectural Codex**.
+1. **Spaceship Cosmic Flight Simulator (3D Mode):** Pilot an aerospace scout ship through an authored 7-sector galactic corridor with hexagonal space gates, procedural PBR planet surfaces, Rayleigh atmospheric scattering, and GPU-instanced asteroid belts. Clear each sector sequentially with milestone achievements and warp triggers, culminating in the **Grand Finale Architect Dossier**.
 2. **Executive Skim Mode (2D Mode):** A clean, high-contrast editorial architecture dossier readable in under 60 seconds with 100% technical substance, zero fluff, and an initial bundle under **87 kB gzip**.
 
 ---
@@ -29,16 +29,19 @@ A dual-mode systems engineering portfolio engineered with zero bloat:
 
 ---
 
-## 3D Spaceship Flight Mechanics
+## 3D Spaceship Flight Mechanics & Mission Progression
 
+- **Authored Narrative Flow:** 7 sequential sectors connected by hexagonal guidance gates. Approaching each planet automatically clears the sector, awards achievements, and displays a prominent **"WARP TO NEXT SECTOR →"** guidance prompt.
+- **Grand Finale Modal:** Reaching the final sector (Terminus-Zero) triggers a mission accomplishment modal featuring verified 13+ year architectural metrics, 1-click interview scheduling, and instant access to the full 2D resume.
 - **Real-Time Flight Engine:** Delta-wing aerospace scout with dual ion propulsion engines, dynamic roll/banking physics, and camera inertia follow.
-- **Flight Controls:**
-  - `Mouse`: Steer spaceship pitch and yaw through 3D space.
-  - `W` / `Shift` / `Space`: Fire warp afterburners (increases speed, flares thruster plasma, expands camera FOV).
-  - `A` / `D`: Bank and roll wings.
-  - `F` / Click: Toggle Planetary Codex scanner.
-- **Quantum Autopilot:** Bottom HUD scrubber with 1-click navigation to instantly warp and enter orbit around any of the 7 planets.
-- **Native Web Audio:** Zero-dependency procedural Web Audio API synthesizer for warp whooshes, radar target locks, and achievement chimes.
+- **Desktop & Mobile Controls:**
+  - `Mouse` or `Touch Drag`: Steer spaceship pitch and yaw through 3D space with zero state lag.
+  - `W` / `Shift` / `Space` / `[⚡ BOOST]`: Fire warp afterburners (increases speed, flares thruster plasma, expands camera FOV).
+  - `A` / `D` or `[◄] [►]`: Bank and roll wings.
+  - `F` / Reticle Click: Toggle Planetary Codex scanner.
+- **Quantum Autopilot:** Bottom HUD scrubber with clear completion checkmarks (`✓`) and 1-click warp navigation to any of the 7 planets.
+- **Photorealistic PBR Visuals:** Procedural canvas-based 1024x512 PBR textures, atmospheric limb glow, GPU-instanced tumbling asteroid belts, and ACES Filmic tone mapping.
+- **Native Web Audio:** Zero-dependency procedural Web Audio API synthesizer for warp whooshes, radar target locks, and achievement fanfare.
 - **Instant Skim Exit:** 1-click button to exit 3D flight and return to the 2D technical dossier at any time.
 
 ---

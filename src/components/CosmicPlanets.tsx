@@ -2,7 +2,9 @@ import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
-import { PLANETS_META, PlanetMeta } from '../data/planetData';
+import { PLANETS_META } from '../data/planetData';
+import { planetTextures } from '../utils/proceduralPlanetTextures';
+import { AsteroidBelt } from './AsteroidBelt';
 
 interface CosmicPlanetsProps {
   shipPos: THREE.Vector3;
@@ -11,192 +13,218 @@ interface CosmicPlanetsProps {
 }
 
 // -------------------------------------------------------------
-// INDIVIDUAL PLANETARY CELESTIAL BODIES
+// ULTRA-REALISTIC PLANETARY CELESTIAL BODIES
 // -------------------------------------------------------------
 
+// Atmospheric Rim Glow Component
+function AtmosphereGlow({ radius, color, opacity = 0.25 }: { radius: number; color: string; opacity?: number }) {
+  return (
+    <mesh>
+      <sphereGeometry args={[radius * 1.12, 32, 32]} />
+      <meshBasicMaterial 
+        color={color} 
+        transparent 
+        opacity={opacity} 
+        side={THREE.BackSide} 
+        blending={THREE.AdditiveBlending} 
+      />
+    </mesh>
+  );
+}
+
 // Planet 01: Ingress-Prime (B2B Travel Booking & High-Throughput Aggregator)
-function Planet01({ isTargeted, isNearby }: { isTargeted: boolean; isNearby: boolean }) {
+function Planet01({ isTargeted }: { isTargeted: boolean }) {
   const ringsRef = useRef<THREE.Group>(null);
   const planetRef = useRef<THREE.Mesh>(null);
+  const texture = planetTextures.getPlanet01Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    if (ringsRef.current) ringsRef.current.rotation.z = t * 0.4;
-    if (planetRef.current) planetRef.current.rotation.y = t * 0.15;
+    if (ringsRef.current) ringsRef.current.rotation.z = t * 0.2;
+    if (planetRef.current) planetRef.current.rotation.y = t * 0.12;
   });
 
   return (
     <group>
-      {/* Molten Terrestrial Sphere */}
+      {/* Textured PBR Terrestrial Sphere */}
       <mesh ref={planetRef}>
-        <sphereGeometry args={[2.2, 32, 32]} />
+        <sphereGeometry args={[2.5, 48, 48]} />
         <meshStandardMaterial 
-          color="#92400e" 
-          emissive="#d4883b" 
-          emissiveIntensity={isTargeted ? 0.7 : 0.3} 
-          roughness={0.6} 
-          metalness={0.4} 
+          map={texture}
+          roughness={0.7} 
+          metalness={0.3} 
+          emissive="#78350f"
+          emissiveIntensity={isTargeted ? 0.35 : 0.15}
         />
       </mesh>
 
-      {/* Dual Planetary Data Rings with Orbiting Booking Packet Moons */}
-      <group ref={ringsRef} rotation={[0.4, 0.2, 0]}>
+      {/* Atmospheric Scattering Glow */}
+      <AtmosphereGlow radius={2.5} color="#d4883b" opacity={0.3} />
+
+      {/* Planetary Data Rings with Orbiting Moons */}
+      <group ref={ringsRef} rotation={[0.45, 0.2, 0]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[3.2, 3.8, 36]} />
-          <meshBasicMaterial color="#d4883b" side={THREE.DoubleSide} transparent opacity={0.65} />
+          <ringGeometry args={[3.6, 4.4, 48]} />
+          <meshBasicMaterial color="#d4883b" side={THREE.DoubleSide} transparent opacity={0.55} />
         </mesh>
         {[0, 1, 2, 3].map((i) => {
           const angle = (i * Math.PI * 2) / 4;
           return (
-            <mesh key={i} position={[Math.cos(angle) * 3.5, 0, Math.sin(angle) * 3.5]}>
-              <boxGeometry args={[0.24, 0.24, 0.24]} />
+            <mesh key={i} position={[Math.cos(angle) * 4.0, 0, Math.sin(angle) * 4.0]}>
+              <boxGeometry args={[0.22, 0.22, 0.22]} />
               <meshBasicMaterial color={i % 2 === 0 ? "#ffffff" : "#38bdf8"} />
             </mesh>
           );
         })}
       </group>
+
+      {/* Orbiting Asteroid Belt */}
+      <AsteroidBelt center={[0, 0, 0]} innerRadius={5.2} outerRadius={7.0} count={60} />
     </group>
   );
 }
 
 // Planet 02: Crypt-FHIR (Healthcare Serverless Interoperability)
-function Planet02({ isTargeted, isNearby }: { isTargeted: boolean; isNearby: boolean }) {
+function Planet02({ isTargeted }: { isTargeted: boolean }) {
   const shieldCage = useRef<THREE.Group>(null);
   const planetRef = useRef<THREE.Mesh>(null);
-  const beaconSat = useRef<THREE.Group>(null);
+  const texture = planetTextures.getPlanet02Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     if (shieldCage.current) {
-      shieldCage.current.rotation.y = t * 0.3;
-      shieldCage.current.rotation.x = Math.sin(t * 0.2) * 0.2;
+      shieldCage.current.rotation.y = t * 0.25;
+      shieldCage.current.rotation.x = Math.sin(t * 0.2) * 0.15;
     }
     if (planetRef.current) planetRef.current.rotation.y = -t * 0.1;
-    if (beaconSat.current) beaconSat.current.rotation.y = t * 0.8;
   });
 
   return (
     <group>
-      {/* Icy Teal Planet */}
+      {/* Textured Oceanic Teal Planet */}
       <mesh ref={planetRef}>
-        <sphereGeometry args={[2.0, 32, 32]} />
+        <sphereGeometry args={[2.3, 48, 48]} />
         <meshStandardMaterial 
-          color="#0d9488" 
-          emissive="#14b8a6" 
-          emissiveIntensity={isTargeted ? 0.6 : 0.25} 
-          roughness={0.2} 
-          metalness={0.8} 
+          map={texture}
+          roughness={0.4} 
+          metalness={0.6} 
+          emissive="#0d9488"
+          emissiveIntensity={isTargeted ? 0.35 : 0.15}
         />
       </mesh>
+
+      {/* Atmospheric Scattering Glow */}
+      <AtmosphereGlow radius={2.3} color="#2dd4bf" opacity={0.35} />
 
       {/* Rotating Hexagonal HIPAA Defense Shield Cage */}
       <group ref={shieldCage}>
         <mesh>
-          <icosahedronGeometry args={[3.0, 1]} />
-          <meshBasicMaterial color="#2dd4bf" wireframe transparent opacity={0.5} />
+          <icosahedronGeometry args={[3.2, 1]} />
+          <meshBasicMaterial color="#2dd4bf" wireframe transparent opacity={0.45} />
         </mesh>
-      </group>
-
-      {/* Orbiting Healthcare Telemetry Satellite with 3D Cross */}
-      <group ref={beaconSat}>
-        <group position={[3.6, 0.5, 0]}>
-          <mesh>
-            <boxGeometry args={[0.3, 0.1, 0.1]} />
-            <meshBasicMaterial color="#ffffff" />
-          </mesh>
-          <mesh>
-            <boxGeometry args={[0.1, 0.3, 0.1]} />
-            <meshBasicMaterial color="#ffffff" />
-          </mesh>
-        </group>
       </group>
     </group>
   );
 }
 
 // Planet 03: Vault-9 (Dynamic Secrets & Cryptographic Relay)
-function Planet03({ isTargeted, isNearby }: { isTargeted: boolean; isNearby: boolean }) {
+function Planet03({ isTargeted }: { isTargeted: boolean }) {
   const gears = useRef<THREE.Group>(null);
   const planetRef = useRef<THREE.Mesh>(null);
+  const texture = planetTextures.getPlanet03Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    if (gears.current) gears.current.rotation.z = t * 0.5;
+    if (gears.current) gears.current.rotation.z = t * 0.35;
     if (planetRef.current) planetRef.current.rotation.y = t * 0.08;
   });
 
   return (
     <group>
-      {/* Dark Obsidian Planet */}
+      {/* Obsidian Basalt Planet with Circuit Grids */}
       <mesh ref={planetRef}>
-        <sphereGeometry args={[2.4, 32, 32]} />
+        <sphereGeometry args={[2.6, 48, 48]} />
         <meshStandardMaterial 
-          color="#1e1b18" 
-          emissive="#f59e0b" 
-          emissiveIntensity={isTargeted ? 0.5 : 0.15} 
+          map={texture}
           roughness={0.3} 
-          metalness={0.9} 
+          metalness={0.85} 
+          emissive="#b45309"
+          emissiveIntensity={isTargeted ? 0.3 : 0.1}
         />
       </mesh>
 
-      {/* Interlocking Planetary Gear Rings */}
-      <group ref={gears} rotation={[0.5, 0, 0]}>
+      {/* Atmosphere Glow */}
+      <AtmosphereGlow radius={2.6} color="#f59e0b" opacity={0.25} />
+
+      {/* Interlocking Planetary Gear Rings with Notch Teeth */}
+      <group ref={gears} rotation={[0.4, 0.2, 0]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[3.4, 4.0, 32]} />
-          <meshStandardMaterial color="#f59e0b" metalness={0.9} roughness={0.1} side={THREE.DoubleSide} />
+          <ringGeometry args={[3.6, 4.3, 36]} />
+          <meshStandardMaterial color="#d97706" metalness={0.9} roughness={0.2} side={THREE.DoubleSide} />
         </mesh>
-        {[0, 1, 2, 3, 4, 5].map((i) => {
-          const angle = (i * Math.PI * 2) / 6;
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+          const angle = (i * Math.PI * 2) / 8;
           return (
-            <mesh key={i} position={[Math.cos(angle) * 4.1, 0, Math.sin(angle) * 4.1]}>
-              <boxGeometry args={[0.35, 0.2, 0.2]} />
+            <mesh key={i} position={[Math.cos(angle) * 4.4, 0, Math.sin(angle) * 4.4]}>
+              <boxGeometry args={[0.35, 0.18, 0.18]} />
               <meshStandardMaterial color="#f59e0b" metalness={0.9} />
             </mesh>
           );
         })}
       </group>
+
+      <AsteroidBelt center={[0, 0, 0]} innerRadius={5.6} outerRadius={7.8} count={70} />
     </group>
   );
 }
 
 // Planet 04: GitOps-Gateway (Binary Twin Planet System)
-function Planet04({ isTargeted, isNearby }: { isTargeted: boolean; isNearby: boolean }) {
+function Planet04({ isTargeted }: { isTargeted: boolean }) {
   const binaryGroup = useRef<THREE.Group>(null);
+  const texture = planetTextures.getPlanet04Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     if (binaryGroup.current) {
-      binaryGroup.current.rotation.y = t * 0.6;
+      binaryGroup.current.rotation.y = t * 0.5;
     }
   });
 
   return (
     <group ref={binaryGroup}>
       {/* Primary Production 90% Planet (Emerald) */}
-      <mesh position={[-2.2, 0, 0]}>
-        <sphereGeometry args={[1.5, 24, 24]} />
+      <mesh position={[-2.4, 0, 0]}>
+        <sphereGeometry args={[1.7, 36, 36]} />
         <meshStandardMaterial 
-          color="#065f46" 
-          emissive="#10b981" 
-          emissiveIntensity={isTargeted ? 0.8 : 0.3} 
-          roughness={0.4} 
+          map={texture} 
+          roughness={0.5} 
+          metalness={0.5} 
+          emissive="#059669" 
+          emissiveIntensity={isTargeted ? 0.45 : 0.2} 
         />
       </mesh>
+      <group position={[-2.4, 0, 0]}>
+        <AtmosphereGlow radius={1.7} color="#10b981" opacity={0.3} />
+      </group>
 
       {/* Canary 10% Companion Planet (Cyan) */}
-      <mesh position={[2.2, 0, 0]}>
-        <sphereGeometry args={[1.0, 24, 24]} />
+      <mesh position={[2.4, 0, 0]}>
+        <sphereGeometry args={[1.1, 32, 32]} />
         <meshStandardMaterial 
           color="#0284c7" 
+          roughness={0.3} 
+          metalness={0.7} 
           emissive="#38bdf8" 
-          emissiveIntensity={isTargeted ? 0.9 : 0.4} 
-          roughness={0.4} 
+          emissiveIntensity={isTargeted ? 0.5 : 0.25} 
         />
       </mesh>
+      <group position={[2.4, 0, 0]}>
+        <AtmosphereGlow radius={1.1} color="#38bdf8" opacity={0.35} />
+      </group>
 
-      {/* Plasma Energy Conduit Bridge between Binary Twins */}
+      {/* High-Energy Plasma Conduit Bridge */}
       <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.08, 0.08, 4.4, 8]} />
+        <cylinderGeometry args={[0.06, 0.06, 4.8, 8]} />
         <meshBasicMaterial color="#34d399" transparent opacity={0.8} />
       </mesh>
     </group>
@@ -204,46 +232,44 @@ function Planet04({ isTargeted, isNearby }: { isTargeted: boolean; isNearby: boo
 }
 
 // Planet 05: Orleans-Prime (FLAGSHIP ★ - 1M+ Virtual Actor Silo & LiveKit WebRTC)
-function Planet05({ isTargeted, isNearby }: { isTargeted: boolean; isNearby: boolean }) {
+function Planet05({ isTargeted }: { isTargeted: boolean }) {
   const grainRing1 = useRef<THREE.Group>(null);
   const grainRing2 = useRef<THREE.Group>(null);
   const grainRing3 = useRef<THREE.Group>(null);
   const polarBeam = useRef<THREE.Mesh>(null);
   const planetRef = useRef<THREE.Mesh>(null);
+  const texture = planetTextures.getPlanet05Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    if (grainRing1.current) grainRing1.current.rotation.y = t * 0.7;
-    if (grainRing2.current) grainRing2.current.rotation.y = -t * 0.5;
-    if (grainRing3.current) grainRing3.current.rotation.y = t * 0.35;
+    if (grainRing1.current) grainRing1.current.rotation.y = t * 0.6;
+    if (grainRing2.current) grainRing2.current.rotation.y = -t * 0.45;
+    if (grainRing3.current) grainRing3.current.rotation.y = t * 0.3;
     if (polarBeam.current) polarBeam.current.rotation.y = t * 0.2;
-    if (planetRef.current) planetRef.current.rotation.y = t * 0.06;
+    if (planetRef.current) planetRef.current.rotation.y = t * 0.05;
   });
 
   return (
     <group>
-      {/* Colossal Gas Giant Megastructure Core */}
+      {/* Colossal Jupiter-Scale Gas Giant with Rich Cloud Bands & Storms */}
       <mesh ref={planetRef}>
-        <sphereGeometry args={[3.6, 40, 40]} />
+        <sphereGeometry args={[3.8, 64, 64]} />
         <meshStandardMaterial 
-          color="#b45309" 
-          emissive="#f59e0b" 
-          emissiveIntensity={isTargeted ? 1.0 : 0.4} 
-          roughness={0.3} 
-          metalness={0.7} 
+          map={texture}
+          roughness={0.4} 
+          metalness={0.4} 
+          emissive="#92400e"
+          emissiveIntensity={isTargeted ? 0.4 : 0.18}
         />
       </mesh>
 
-      {/* Atmospheric Luminous Halo */}
-      <mesh>
-        <sphereGeometry args={[3.85, 32, 32]} />
-        <meshBasicMaterial color="#fcd34d" transparent opacity={0.15} side={THREE.BackSide} />
-      </mesh>
+      {/* Multi-Layered Atmospheric Rayleigh Scattering Glow */}
+      <AtmosphereGlow radius={3.8} color="#f59e0b" opacity={0.4} />
 
-      {/* Polar Hyper-Dense Photon Beams (Vertical Axis) */}
+      {/* Polar Hyper-Dense Photon Energy Beams */}
       <mesh ref={polarBeam} position={[0, 0, 0]}>
-        <cylinderGeometry args={[0.15, 0.25, 14, 12]} />
-        <meshBasicMaterial color="#fbbf24" transparent opacity={0.5} />
+        <cylinderGeometry args={[0.12, 0.22, 16, 12]} />
+        <meshBasicMaterial color="#fbbf24" transparent opacity={0.65} />
       </mesh>
 
       {/* Level 1 Rings: 8 Fast Orbiting Classroom Actor Grains */}
@@ -251,82 +277,88 @@ function Planet05({ isTargeted, isNearby }: { isTargeted: boolean; isNearby: boo
         {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
           const angle = (i * Math.PI * 2) / 8;
           return (
-            <mesh key={i} position={[Math.cos(angle) * 5.0, 0, Math.sin(angle) * 5.0]}>
-              <boxGeometry args={[0.32, 0.32, 0.32]} />
-              <meshStandardMaterial color="#fef08a" emissive="#d4883b" emissiveIntensity={1.8} />
+            <mesh key={i} position={[Math.cos(angle) * 5.4, 0, Math.sin(angle) * 5.4]}>
+              <boxGeometry args={[0.3, 0.3, 0.3]} />
+              <meshStandardMaterial color="#fef08a" emissive="#d4883b" emissiveIntensity={2.0} />
             </mesh>
           );
         })}
       </group>
 
       {/* Level 2 Rings: 12 WebRTC Participant Grains (Inclined 25°) */}
-      <group ref={grainRing2} rotation={[0.4, 0, 0.3]}>
+      <group ref={grainRing2} rotation={[0.38, 0, 0.25]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[6.0, 6.6, 40]} />
+          <ringGeometry args={[6.5, 7.2, 48]} />
           <meshBasicMaterial color="#38bdf8" transparent opacity={0.4} side={THREE.DoubleSide} />
         </mesh>
         {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => {
           const angle = (i * Math.PI * 2) / 12;
           return (
-            <mesh key={i} position={[Math.cos(angle) * 6.3, 0, Math.sin(angle) * 6.3]}>
+            <mesh key={i} position={[Math.cos(angle) * 6.85, 0, Math.sin(angle) * 6.85]}>
               <octahedronGeometry args={[0.22]} />
-              <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={1.6} />
+              <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={1.8} />
             </mesh>
           );
         })}
       </group>
 
       {/* Level 3 Rings: Event Coordinator Grain Monoliths */}
-      <group ref={grainRing3} rotation={[-0.35, 0, -0.2]}>
+      <group ref={grainRing3} rotation={[-0.32, 0, -0.2]}>
         {[0, 1, 2, 3, 4].map((i) => {
           const angle = (i * Math.PI * 2) / 5;
           return (
-            <mesh key={i} position={[Math.cos(angle) * 7.6, 0, Math.sin(angle) * 7.6]}>
-              <dodecahedronGeometry args={[0.24]} />
-              <meshStandardMaterial color="#ffffff" emissive="#f59e0b" emissiveIntensity={1.2} />
+            <mesh key={i} position={[Math.cos(angle) * 8.2, 0, Math.sin(angle) * 8.2]}>
+              <dodecahedronGeometry args={[0.25]} />
+              <meshStandardMaterial color="#ffffff" emissive="#f59e0b" emissiveIntensity={1.4} />
             </mesh>
           );
         })}
       </group>
+
+      {/* Dense Outer Planetary Asteroid Debris Ring */}
+      <AsteroidBelt center={[0, 0, 0]} innerRadius={9.2} outerRadius={12.0} count={100} />
     </group>
   );
 }
 
 // Planet 06: Nexus-Agentis (Autonomous Multi-Agent Swarm)
-function Planet06({ isTargeted, isNearby }: { isTargeted: boolean; isNearby: boolean }) {
+function Planet06({ isTargeted }: { isTargeted: boolean }) {
   const planetRef = useRef<THREE.Mesh>(null);
   const agentRing = useRef<THREE.Group>(null);
+  const texture = planetTextures.getPlanet06Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    if (planetRef.current) planetRef.current.rotation.y = t * 0.2;
-    if (agentRing.current) agentRing.current.rotation.y = -t * 0.5;
+    if (planetRef.current) planetRef.current.rotation.y = t * 0.15;
+    if (agentRing.current) agentRing.current.rotation.y = -t * 0.45;
   });
 
   return (
     <group>
-      {/* Faceted Icosahedral World */}
+      {/* Faceted Neural Synaptic Planet */}
       <mesh ref={planetRef}>
-        <icosahedronGeometry args={[2.3, 1]} />
+        <sphereGeometry args={[2.5, 48, 48]} />
         <meshStandardMaterial 
-          color="#312e81" 
-          emissive="#6366f1" 
-          emissiveIntensity={isTargeted ? 0.7 : 0.25} 
-          roughness={0.2} 
-          metalness={0.8} 
+          map={texture}
+          roughness={0.3} 
+          metalness={0.7} 
+          emissive="#4338ca"
+          emissiveIntensity={isTargeted ? 0.4 : 0.18}
         />
       </mesh>
 
-      {/* 3 Orbiting Agent Satellite Probes Exchanging Laser Triangles */}
+      <AtmosphereGlow radius={2.5} color="#818cf8" opacity={0.35} />
+
+      {/* 3 Orbiting Agent Probes Exchanging Laser Triangles */}
       <group ref={agentRing}>
         {[0, 1, 2].map((i) => {
           const angle = (i * Math.PI * 2) / 3;
-          const r = 3.8;
+          const r = 4.2;
           const agentColors = ["#f59e0b", "#38bdf8", "#10b981"];
           return (
             <mesh key={i} position={[Math.cos(angle) * r, 0.4, Math.sin(angle) * r]}>
-              <octahedronGeometry args={[0.32]} />
-              <meshStandardMaterial color={agentColors[i]} emissive={agentColors[i]} emissiveIntensity={1.2} />
+              <octahedronGeometry args={[0.3]} />
+              <meshStandardMaterial color={agentColors[i]} emissive={agentColors[i]} emissiveIntensity={1.3} />
             </mesh>
           );
         })}
@@ -336,41 +368,44 @@ function Planet06({ isTargeted, isNearby }: { isTargeted: boolean; isNearby: boo
 }
 
 // Planet 07: Terminus-Zero (Zero-Bloat Maintainer Monolith)
-function Planet07({ isTargeted, isNearby }: { isTargeted: boolean; isNearby: boolean }) {
+function Planet07({ isTargeted }: { isTargeted: boolean }) {
   const crystalRef = useRef<THREE.Mesh>(null);
   const pulseRing = useRef<THREE.Mesh>(null);
+  const texture = planetTextures.getPlanet07Texture();
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     if (crystalRef.current) {
-      crystalRef.current.rotation.y = t * 0.25;
-      crystalRef.current.rotation.x = Math.sin(t * 0.4) * 0.1;
+      crystalRef.current.rotation.y = t * 0.2;
+      crystalRef.current.rotation.x = Math.sin(t * 0.3) * 0.08;
     }
     if (pulseRing.current) {
-      const scale = 1.0 + (t % 3.0) * 0.8;
+      const scale = 1.0 + (t % 2.5) * 0.9;
       pulseRing.current.scale.set(scale, scale, scale);
-      (pulseRing.current.material as THREE.Material).opacity = Math.max(0, 1.0 - (t % 3.0) / 3.0);
+      (pulseRing.current.material as THREE.Material).opacity = Math.max(0, 1.0 - (t % 2.5) / 2.5);
     }
   });
 
   return (
     <group>
-      {/* Pristine Diamond Crystal Planet */}
+      {/* Pristine Diamond Crystal Planet with Prismatic Facets */}
       <mesh ref={crystalRef}>
-        <octahedronGeometry args={[2.2]} />
+        <octahedronGeometry args={[2.6]} />
         <meshStandardMaterial 
-          color="#eeeff2" 
-          emissive="#d4883b" 
-          emissiveIntensity={isTargeted ? 0.9 : 0.3} 
+          map={texture}
           roughness={0.05} 
           metalness={0.95} 
+          emissive="#38bdf8"
+          emissiveIntensity={isTargeted ? 0.7 : 0.25}
         />
       </mesh>
 
+      <AtmosphereGlow radius={2.6} color="#38bdf8" opacity={0.4} />
+
       {/* Expanding Zero-Bloat Harmonic Pulse Wave */}
       <mesh ref={pulseRing} rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[2.8, 3.0, 36]} />
-        <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} transparent opacity={0.6} />
+        <ringGeometry args={[3.2, 3.4, 48]} />
+        <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} transparent opacity={0.65} />
       </mesh>
     </group>
   );
@@ -389,9 +424,6 @@ export const CosmicPlanets: React.FC<CosmicPlanetsProps> = ({
     <group>
       {PLANETS_META.map((planet, idx) => {
         const isTargeted = targetedPlanetIndex === idx;
-        const planetPos = new THREE.Vector3(...planet.coordinates);
-        const distance = shipPos.distanceTo(planetPos);
-        const isNearby = distance < 16;
 
         return (
           <group 
@@ -402,27 +434,27 @@ export const CosmicPlanets: React.FC<CosmicPlanetsProps> = ({
               onSelectPlanet(idx);
             }}
           >
-            {/* Dedicated Point Light per Planet */}
+            {/* Dedicated Point Light per Planet casting realistic planetary illumination */}
             <pointLight 
               color={planet.primaryColor} 
-              intensity={isTargeted ? 4.5 : 2.0} 
-              distance={25} 
+              intensity={isTargeted ? 5.0 : 2.5} 
+              distance={35} 
             />
 
-            {/* Render Specific Planet Geometry */}
-            {idx === 0 && <Planet01 isTargeted={isTargeted} isNearby={isNearby} />}
-            {idx === 1 && <Planet02 isTargeted={isTargeted} isNearby={isNearby} />}
-            {idx === 2 && <Planet03 isTargeted={isTargeted} isNearby={isNearby} />}
-            {idx === 3 && <Planet04 isTargeted={isTargeted} isNearby={isNearby} />}
-            {idx === 4 && <Planet05 isTargeted={isTargeted} isNearby={isNearby} />}
-            {idx === 5 && <Planet06 isTargeted={isTargeted} isNearby={isNearby} />}
-            {idx === 6 && <Planet07 isTargeted={isTargeted} isNearby={isNearby} />}
+            {/* Render High-Fidelity Planet Geometry */}
+            {idx === 0 && <Planet01 isTargeted={isTargeted} />}
+            {idx === 1 && <Planet02 isTargeted={isTargeted} />}
+            {idx === 2 && <Planet03 isTargeted={isTargeted} />}
+            {idx === 3 && <Planet04 isTargeted={isTargeted} />}
+            {idx === 4 && <Planet05 isTargeted={isTargeted} />}
+            {idx === 5 && <Planet06 isTargeted={isTargeted} />}
+            {idx === 6 && <Planet07 isTargeted={isTargeted} />}
 
-            {/* In-World 3D Targeting Reticle & Planet Badge */}
+            {/* In-World 3D Docking Marker */}
             <Html 
-              position={[0, planet.radius + 1.8, 0]} 
+              position={[0, planet.radius + 2.2, 0]} 
               center 
-              distanceFactor={22}
+              distanceFactor={24}
             >
               <button
                 onClick={(e) => {
@@ -431,18 +463,15 @@ export const CosmicPlanets: React.FC<CosmicPlanetsProps> = ({
                 }}
                 className={`group px-3 py-1.5 rounded-xl font-mono text-xs whitespace-nowrap transition-all shadow-2xl flex items-center gap-2 cursor-pointer ${
                   isTargeted
-                    ? 'bg-[#d4883b] text-[#0b0d11] font-bold ring-4 ring-[#d4883b]/40 scale-110 shadow-[0_0_25px_rgba(212,136,59,0.5)]'
-                    : 'bg-[#0f1218]/90 text-[#eeeff2] hover:bg-[#1a2230] border border-[#2d3a4e] hover:border-[#38bdf8] hover:scale-105'
+                    ? 'bg-[#d4883b] text-[#0b0d11] font-bold ring-4 ring-[#d4883b]/40 scale-110 shadow-[0_0_25px_rgba(212,136,59,0.6)]'
+                    : 'bg-[#0a0e16]/92 text-[#eeeff2] hover:bg-[#162030] border border-[#2d3a4e] hover:border-[#38bdf8] hover:scale-105 backdrop-blur-md'
                 }`}
               >
                 <span className={`w-2 h-2 rounded-full ${isTargeted ? 'bg-[#0b0d11] animate-ping' : 'bg-emerald-400'}`}></span>
                 <span className="font-semibold">{planet.name}</span>
-                <span className="text-[10px] opacity-75 font-mono">
-                  {Math.round(distance)} AU
-                </span>
                 {idx === 4 && (
-                  <span className="text-[10px] px-1 py-0.2 rounded bg-amber-300 text-amber-950 font-black">
-                    FLAGSHIP
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-300 text-amber-950 font-black">
+                    FLAGSHIP ★
                   </span>
                 )}
               </button>

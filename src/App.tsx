@@ -67,6 +67,7 @@ export function App() {
           <SignalCorridor3D
             initialStationIndex={target3DStationIndex}
             onExitToSkim={() => setActiveMode('skim')}
+            onOpenContact={() => setIsContactOpen(true)}
           />
         </Suspense>
       </div>

@@ -9,18 +9,21 @@ import { CosmicPlanets } from './CosmicPlanets';
 import { GalacticWaypoints } from './GalacticWaypoints';
 import { SpaceshipCockpitHUD } from './SpaceshipCockpitHUD';
 import { CaseFileOverlayPanel } from './CaseFileOverlayPanel';
+import { MissionFinaleModal } from './MissionFinaleModal';
 import { flightAudio } from '../utils/flightAudio';
 
 interface SignalCorridor3DProps {
   initialStationIndex?: number;
   onSelectStation?: (caseFileId: string) => void;
   onExitToSkim: () => void;
+  onOpenContact?: () => void;
 }
 
 export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
   initialStationIndex = null,
   onSelectStation,
-  onExitToSkim
+  onExitToSkim,
+  onOpenContact
 }) => {
   // Flight steering state
   const [steerX, setSteerX] = useState(0);
@@ -28,8 +31,12 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
   const [isBoosting, setIsBoosting] = useState(false);
   const [autopilotPlanetIndex, setAutopilotPlanetIndex] = useState<number | null>(initialStationIndex);
 
+  // Mission progression & cleared sectors
+  const [clearedSectors, setClearedSectors] = useState<Set<number>>(new Set());
+  const [isFinaleOpen, setIsFinaleOpen] = useState(false);
+
   // Codex & HUD state
-  const [activePlanetIndex, setActivePlanetIndex] = useState<number>(initialStationIndex ?? 4);
+  const [activePlanetIndex, setActivePlanetIndex] = useState<number>(initialStationIndex ?? 0);
   const [isCodexOpen, setIsCodexOpen] = useState(() => {
     return typeof window !== 'undefined' ? window.innerWidth >= 1024 : false;
   });
@@ -38,7 +45,7 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
   // Telemetry (throttled from FlightRig)
   const [telemetry, setTelemetry] = useState({
     speedKm: 640,
-    targetName: PLANETS_META[initialStationIndex ?? 4].name,
+    targetName: PLANETS_META[initialStationIndex ?? 0].name,
     distanceAu: 15
   });
 
@@ -53,8 +60,9 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
 
   const activePlanet = PLANETS_META[activePlanetIndex];
   const activeCaseFile = CASE_FILES[activePlanetIndex];
+  const isOrbiting = autopilotPlanetIndex !== null && telemetry.distanceAu < 16;
 
-  // Called when user clicks a planet on the HUD or in 3D
+  // Called when user selects a planet on the HUD or in 3D
   const handleSelectPlanet = (idx: number) => {
     setActivePlanetIndex(idx);
     setAutopilotPlanetIndex(idx);
@@ -69,9 +77,17 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
     }
   };
 
+  // Warp to next sequential sector in the authored narrative
+  const handleWarpToNextSector = () => {
+    const nextIdx = (activePlanetIndex + 1) % PLANETS_META.length;
+    handleSelectPlanet(nextIdx);
+  };
+
   // Called when spaceship enters proximity of a planet
   const handleReachPlanet = (idx: number) => {
     setActivePlanetIndex(idx);
+    setClearedSectors(prev => new Set(prev).add(idx));
+
     const planet = PLANETS_META[idx];
     setAchievementNotification({
       title: planet.achievementTitle,
@@ -79,14 +95,28 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
     });
     flightAudio.playAchievementChime();
 
-    // Auto-open codex only on desktop viewports
+    // Auto-open codex on desktop viewports
     if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
       setIsCodexOpen(true);
+    }
+
+    // If reached Sector 07 (Terminus-Zero), trigger Grand Finale victory modal!
+    if (idx === 6) {
+      setTimeout(() => {
+        setIsFinaleOpen(true);
+      }, 1800);
     }
 
     setTimeout(() => {
       setAchievementNotification(null);
     }, 6000);
+  };
+
+  // Replay mission from Sector 01
+  const handleReplayMission = () => {
+    setClearedSectors(new Set());
+    setIsFinaleOpen(false);
+    handleSelectPlanet(0);
   };
 
   // Keyboard flight controls
@@ -165,37 +195,42 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
       }}
     >
       
-      {/* 3D WebGL Flight Canvas */}
+      {/* 3D WebGL Flight Canvas with ACES Filmic Photorealistic Tone Mapping */}
       <Canvas
-        camera={{ position: [0, 3, -18], fov: 48, near: 0.1, far: 900 }}
+        camera={{ position: [0, 3, -18], fov: 48, near: 0.1, far: 1000 }}
         dpr={[1, 1.5]}
-        gl={{ powerPreference: 'high-performance', antialias: true }}
+        gl={{ 
+          toneMapping: THREE.ACESFilmicToneMapping, 
+          toneMappingExposure: 1.35,
+          powerPreference: 'high-performance', 
+          antialias: true 
+        }}
         onCreated={({ scene }) => {
-          scene.fog = new THREE.FogExp2('#030508', 0.004);
+          scene.fog = new THREE.FogExp2('#030508', 0.0035);
         }}
       >
-        {/* Cosmic Lighting */}
+        {/* Photorealistic Cosmic Sunlight & Rim Lighting */}
         <ambientLight intensity={0.5} />
-        <directionalLight position={[100, 100, 100]} intensity={2.5} color="#fff4dd" />
-        <directionalLight position={[-100, -50, -50]} intensity={0.7} color="#38bdf8" />
+        <directionalLight position={[120, 100, 100]} intensity={2.8} color="#fff6e5" castShadow />
+        <directionalLight position={[-100, -60, -50]} intensity={0.8} color="#38bdf8" />
 
-        {/* 5000 Deep Cosmic Stars */}
-        <Stars radius={180} depth={90} count={5000} factor={4} saturation={0} fade speed={1.2} />
+        {/* 6000 Deep Cosmic Stars */}
+        <Stars radius={200} depth={100} count={6000} factor={4.5} saturation={0} fade speed={1.2} />
 
-        {/* Cosmic Plasma Motes */}
-        <Sparkles count={100} scale={140} size={2.5} speed={0.4} color="#38bdf8" opacity={0.35} />
+        {/* Floating Cosmic Plasma & Stardust Motes */}
+        <Sparkles count={120} scale={150} size={2.8} speed={0.35} color="#38bdf8" opacity={0.4} />
 
         {/* Galactic Waypoints & Space Gates along Corridor */}
         <GalacticWaypoints />
 
-        {/* 7 Majestic Celestial Megastructure Planets to the Sides */}
+        {/* 7 Majestic Celestial Megastructure Planets with Procedural PBR & Atmospheres */}
         <CosmicPlanets
           shipPos={new THREE.Vector3(0, 0, 0)}
           targetedPlanetIndex={activePlanetIndex}
           onSelectPlanet={handleSelectPlanet}
         />
 
-        {/* Real-Time Spaceship Flight Rig & Chase Camera */}
+        {/* Real-Time Spaceship Flight Rig & Spring-Damped Chase Camera */}
         <SpaceshipFlightRig
           steerX={steerX}
           steerY={steerY}
@@ -208,17 +243,21 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
         />
       </Canvas>
 
-      {/* Cockpit HUD & Touch Controls */}
+      {/* Cockpit HUD, Mission Progress, Warp to Next Sector, & Touch Controls */}
       <SpaceshipCockpitHUD
         currentPlanetIndex={activePlanetIndex}
         targetedPlanet={activePlanet}
         speed={telemetry.speedKm / 320}
         isBoosting={isBoosting}
         distanceToTarget={telemetry.distanceAu}
+        isOrbiting={isOrbiting}
+        clearedSectors={clearedSectors}
         achievementNotification={achievementNotification}
         isSoundMuted={isSoundMuted}
         onToggleSound={handleToggleSound}
         onSelectPlanet={handleSelectPlanet}
+        onWarpToNextSector={handleWarpToNextSector}
+        onOpenGrandFinale={() => setIsFinaleOpen(true)}
         onToggleCodex={() => setIsCodexOpen(prev => !prev)}
         isCodexOpen={isCodexOpen}
         onExitFlight={onExitToSkim}
@@ -258,6 +297,19 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
           totalStations={PLANETS_META.length}
         />
       )}
+
+      {/* Grand Finale Victory Modal (Unlocked at Sector 07 Terminus) */}
+      <MissionFinaleModal
+        isOpen={isFinaleOpen}
+        onClose={() => setIsFinaleOpen(false)}
+        onReplay={handleReplayMission}
+        onOpenContact={() => {
+          setIsFinaleOpen(false);
+          onExitToSkim();
+          if (onOpenContact) onOpenContact();
+        }}
+        onExitTo2D={onExitToSkim}
+      />
 
     </div>
   );

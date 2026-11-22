@@ -16,7 +16,15 @@ import { ArrowUp, Radio, Compass, Layers, Terminal, BookOpen, ShieldCheck, Activ
 const SignalCorridor3D = lazy(() => import('./components/SignalCorridor3D').then(m => ({ default: m.SignalCorridor3D })));
 
 export function App() {
-  const [activeMode, setActiveMode] = useState<'skim' | '3d'>('skim');
+  const [activeMode, setActiveMode] = useState<'skim' | '3d'>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === '3d' || window.location.hash === '#3d') {
+        return '3d';
+      }
+    }
+    return 'skim';
+  });
   const [target3DStationIndex, setTarget3DStationIndex] = useState<number>(4);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [latencyMs, setLatencyMs] = useState(42);

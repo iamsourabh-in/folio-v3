@@ -17,6 +17,7 @@ const SignalCorridor3D = lazy(() => import('./components/SignalCorridor3D').then
 
 export function App() {
   const [activeMode, setActiveMode] = useState<'skim' | '3d'>('skim');
+  const [target3DStationIndex, setTarget3DStationIndex] = useState<number>(4);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [latencyMs, setLatencyMs] = useState(42);
   const [activeChapterFilter, setActiveChapterFilter] = useState<string>('all');
@@ -56,6 +57,7 @@ export function App() {
           </div>
         }>
           <SignalCorridor3D
+            initialStationIndex={target3DStationIndex}
             onExitToSkim={() => setActiveMode('skim')}
           />
         </Suspense>
@@ -145,6 +147,10 @@ export function App() {
                 key={caseFile.id}
                 caseFile={caseFile}
                 isFlagship={caseFile.chapterNumber === 5}
+                onInspectIn3D={(idx) => {
+                  setTarget3DStationIndex(idx);
+                  setActiveMode('3d');
+                }}
               />
             ))}
           </div>

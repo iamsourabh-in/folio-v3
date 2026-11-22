@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { CaseFile } from '../types';
-import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Copy, Check, Terminal, Shield, ArrowUpRight } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Copy, Check, Terminal, Shield, ArrowUpRight, Compass } from 'lucide-react';
 
 interface CaseFileCardProps {
   caseFile: CaseFile;
   isFlagship?: boolean;
+  onInspectIn3D?: (chapterIndex: number) => void;
 }
 
-export const CaseFileCard: React.FC<CaseFileCardProps> = ({ caseFile, isFlagship = false }) => {
+export const CaseFileCard: React.FC<CaseFileCardProps> = ({ caseFile, isFlagship = false, onInspectIn3D }) => {
   const [copied, setCopied] = useState(false);
   const [expandedDetails, setExpandedDetails] = useState(isFlagship);
 
@@ -40,10 +41,23 @@ export const CaseFileCard: React.FC<CaseFileCardProps> = ({ caseFile, isFlagship
           )}
         </div>
         
-        <div className="text-xs font-mono text-[#7a8494] flex items-center gap-2">
-          <span>{caseFile.timeframe}</span>
-          <span>•</span>
-          <span className="text-[#9aa4b5]">{caseFile.anonymizedEmployer}</span>
+        <div className="flex items-center gap-3">
+          {onInspectIn3D && (
+            <button
+              onClick={() => onInspectIn3D(caseFile.chapterNumber - 1)}
+              className="px-2.5 py-1 rounded bg-[#131b26] hover:bg-[#d4883b] text-[#38bdf8] hover:text-[#0b0d11] font-mono text-xs font-semibold border border-[#253954] hover:border-[#d4883b] transition-all flex items-center gap-1.5 shadow-sm"
+              title={`Inspect 3D Station 0${caseFile.chapterNumber}`}
+            >
+              <Compass className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '10s' }} />
+              <span>Inspect in 3D</span>
+            </button>
+          )}
+
+          <div className="text-xs font-mono text-[#7a8494] flex items-center gap-2">
+            <span>{caseFile.timeframe}</span>
+            <span>•</span>
+            <span className="text-[#9aa4b5]">{caseFile.anonymizedEmployer}</span>
+          </div>
         </div>
       </div>
 

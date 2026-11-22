@@ -28,17 +28,286 @@ const CAMERA_OFFSETS: [number, number, number][] = [
   [0, 3.4, 8.0],
   [0, 3.2, 8.5],
   [0, 3.5, 9.0],
-  [0, 4.2, 10.5], // Flagship wider shot
+  [0, 4.4, 10.8], // Flagship wider shot
   [0, 3.4, 8.5],
   [0, 3.2, 8.5]
 ];
+
+// Sparse deep bathymetric sediment motes (subtle oceanic drift, not noisy sparkles)
+function BathymetricSedimentMotes() {
+  const count = 180;
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+
+  const particles = useMemo(() => {
+    const data = [];
+    for (let i = 0; i < count; i++) {
+      data.push({
+        x: (Math.random() - 0.5) * 80,
+        y: Math.random() * 12 - 1,
+        z: (Math.random() - 0.5) * 50,
+        speedY: 0.003 + Math.random() * 0.006,
+        rotSpeed: (Math.random() - 0.5) * 0.01,
+        scale: 0.04 + Math.random() * 0.06
+      });
+    }
+    return data;
+  }, []);
+
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+
+  useFrame(() => {
+    if (!meshRef.current) return;
+    particles.forEach((p, i) => {
+      p.y += p.speedY;
+      if (p.y > 11) p.y = -1;
+      dummy.position.set(p.x, p.y, p.z);
+      dummy.scale.set(p.scale, p.scale, p.scale);
+      dummy.rotation.x += p.rotSpeed;
+      dummy.updateMatrix();
+      meshRef.current!.setMatrixAt(i, dummy.matrix);
+    });
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      <octahedronGeometry args={[1, 0]} />
+      <meshBasicMaterial color="#6a778c" transparent opacity={0.35} />
+    </instancedMesh>
+  );
+}
+
+// ---------------------------------------------------------------------
+// BESPOKE PROCEDURAL VISUAL MOTIFS (Stations 01 - 07)
+// ---------------------------------------------------------------------
+
+// Motif 01: High-Frequency Data Ingress Rings (Travel Search Buffer)
+function Station01Motif({ position, isActive }: { position: [number, number, number]; isActive: boolean }) {
+  const ringRef = useRef<THREE.Group>(null);
+  useFrame((state) => {
+    if (ringRef.current) {
+      ringRef.current.rotation.z = state.clock.getElapsedTime() * 0.6;
+    }
+  });
+
+  return (
+    <group ref={ringRef} position={[position[0], position[1] + 1.2, position[2]]}>
+      <mesh rotation={[Math.PI / 4, 0, 0]}>
+        <torusGeometry args={[1.2, 0.025, 8, 32]} />
+        <meshBasicMaterial color={isActive ? "#d4883b" : "#445065"} transparent opacity={0.7} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 4, 0, 0]}>
+        <torusGeometry args={[0.9, 0.02, 8, 32]} />
+        <meshBasicMaterial color={isActive ? "#38bdf8" : "#323c4d"} transparent opacity={0.6} />
+      </mesh>
+    </group>
+  );
+}
+
+// Motif 02: FHIR Interoperability Data Lattice (Isometric Standards Grid)
+function Station02Motif({ position, isActive }: { position: [number, number, number]; isActive: boolean }) {
+  const latticeRef = useRef<THREE.Group>(null);
+  useFrame((state) => {
+    if (latticeRef.current) {
+      latticeRef.current.rotation.y = state.clock.getElapsedTime() * 0.3;
+    }
+  });
+
+  return (
+    <group ref={latticeRef} position={[position[0], position[1] + 1.2, position[2]]}>
+      {/* 8 isometric cube corners */}
+      {[-0.6, 0.6].map(x => [-0.6, 0.6].map(y => [-0.6, 0.6].map(z => (
+        <mesh key={`${x}-${y}-${z}`} position={[x, y, z]}>
+          <boxGeometry args={[0.08, 0.08, 0.08]} />
+          <meshBasicMaterial color={isActive ? "#38bdf8" : "#55647c"} />
+        </mesh>
+      ))))}
+      {/* Wireframe boundary box */}
+      <mesh>
+        <boxGeometry args={[1.2, 1.2, 1.2]} />
+        <meshBasicMaterial color={isActive ? "#2dd4bf" : "#2a3445"} wireframe={true} transparent opacity={0.5} />
+      </mesh>
+    </group>
+  );
+}
+
+// Motif 03: Cryptographic Vault Ring (Dynamic Ephemeral Secret Rotation)
+function Station03Motif({ position, isActive }: { position: [number, number, number]; isActive: boolean }) {
+  const ring1Ref = useRef<THREE.Mesh>(null);
+  const ring2Ref = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    if (ring1Ref.current) ring1Ref.current.rotation.x = t * 0.8;
+    if (ring2Ref.current) ring2Ref.current.rotation.y = -t * 0.8;
+  });
+
+  return (
+    <group position={[position[0], position[1] + 1.2, position[2]]}>
+      <mesh ref={ring1Ref}>
+        <torusGeometry args={[1.1, 0.03, 8, 36]} />
+        <meshStandardMaterial color={isActive ? "#d4883b" : "#4a566a"} emissive={isActive ? "#d4883b" : "#000"} emissiveIntensity={0.5} />
+      </mesh>
+      <mesh ref={ring2Ref}>
+        <torusGeometry args={[1.35, 0.03, 8, 36]} />
+        <meshStandardMaterial color={isActive ? "#fbbf24" : "#384353"} />
+      </mesh>
+    </group>
+  );
+}
+
+// Motif 04: GitOps Control Plane & Istio Service Mesh Boundary Split
+function Station04Motif({ position, isActive }: { position: [number, number, number]; isActive: boolean }) {
+  const meshGateRef = useRef<THREE.Group>(null);
+  useFrame((state) => {
+    if (meshGateRef.current) {
+      meshGateRef.current.rotation.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.2;
+    }
+  });
+
+  return (
+    <group ref={meshGateRef} position={[position[0], position[1] + 1.2, position[2]]}>
+      {/* Ingress Gateway Arch */}
+      <mesh position={[0, 0, 0]}>
+        <cylinderGeometry args={[1.2, 1.2, 0.1, 16, 1, true]} />
+        <meshBasicMaterial color={isActive ? "#10b981" : "#2b3648"} wireframe={true} />
+      </mesh>
+      {/* Canary Traffic Split Line */}
+      <mesh position={[0, 0.6, 0]}>
+        <boxGeometry args={[0.04, 1.2, 0.04]} />
+        <meshBasicMaterial color="#38bdf8" />
+      </mesh>
+    </group>
+  );
+}
+
+// Motif 05: The Orleans Actor Silo & LiveKit WebRTC Core (Flagship)
+function Station05Motif({ position, isActive }: { position: [number, number, number]; isActive: boolean }) {
+  const actorGroupRef = useRef<THREE.Group>(null);
+  const mediaStrandsRef = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    if (actorGroupRef.current) {
+      actorGroupRef.current.rotation.y = t * 0.9;
+    }
+    if (mediaStrandsRef.current) {
+      mediaStrandsRef.current.rotation.y = -t * 0.4;
+    }
+  });
+
+  return (
+    <group position={[position[0], position[1] + 1.2, position[2]]}>
+      {/* Orbiting Actor Grains (ClassroomGrain, ParticipantGrain, EventCoordinatorGrain) */}
+      <group ref={actorGroupRef}>
+        {[0, 1, 2, 3, 4].map((i) => {
+          const angle = (i * Math.PI * 2) / 5;
+          const r = 1.6;
+          return (
+            <mesh key={i} position={[Math.cos(angle) * r, Math.sin(angle * 2) * 0.25, Math.sin(angle) * r]}>
+              <boxGeometry args={[0.22, 0.22, 0.22]} />
+              <meshStandardMaterial 
+                color={isActive ? "#fbbf24" : "#92400e"} 
+                emissive="#d4883b" 
+                emissiveIntensity={isActive ? 1.4 : 0.6} 
+              />
+            </mesh>
+          );
+        })}
+      </group>
+
+      {/* WebRTC Audio/Video Media Conduit Ring */}
+      <group ref={mediaStrandsRef}>
+        <mesh rotation={[Math.PI / 3, 0, 0]}>
+          <torusGeometry args={[1.9, 0.035, 8, 48]} />
+          <meshBasicMaterial color={isActive ? "#d4883b" : "#48566c"} transparent opacity={0.8} />
+        </mesh>
+      </group>
+
+      {/* FoundationDB Transactional Core Cube at the Pedestal Root */}
+      <mesh position={[0, -0.6, 0]}>
+        <boxGeometry args={[0.6, 0.6, 0.6]} />
+        <meshStandardMaterial color="#1a2230" metalness={0.7} roughness={0.3} />
+      </mesh>
+    </group>
+  );
+}
+
+// Motif 06: Autonomous Agent Frontier & Hash-Chained Memory Ledger
+function Station06Motif({ position, isActive }: { position: [number, number, number]; isActive: boolean }) {
+  const ringRef = useRef<THREE.Group>(null);
+  useFrame((state) => {
+    if (ringRef.current) {
+      ringRef.current.rotation.y = state.clock.getElapsedTime() * 0.5;
+    }
+  });
+
+  return (
+    <group ref={ringRef} position={[position[0], position[1] + 1.2, position[2]]}>
+      {/* Round-Table Peer Substrate Ring */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[1.3, 0.04, 8, 36]} />
+        <meshBasicMaterial color={isActive ? "#38bdf8" : "#323d4e"} />
+      </mesh>
+      {/* Three Peer Agent Nodes (Human + Specialist Agents) */}
+      {[0, 1, 2].map((i) => {
+        const angle = (i * Math.PI * 2) / 3;
+        return (
+          <mesh key={i} position={[Math.cos(angle) * 1.3, 0, Math.sin(angle) * 1.3]}>
+            <sphereGeometry args={[0.15, 12, 12]} />
+            <meshStandardMaterial color={i === 0 ? "#eeeff2" : "#d4883b"} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+// Motif 07: Zero-Bloat Terminus & Maintainer Crystalline Prisms
+function Station07Motif({ position, isActive }: { position: [number, number, number]; isActive: boolean }) {
+  const prismRef = useRef<THREE.Group>(null);
+  useFrame((state) => {
+    if (prismRef.current) {
+      prismRef.current.rotation.y = state.clock.getElapsedTime() * 0.4;
+    }
+  });
+
+  return (
+    <group ref={prismRef} position={[position[0], position[1] + 1.2, position[2]]}>
+      {/* Precision Triangular Pure Crystal */}
+      <mesh rotation={[0, 0, Math.PI / 6]}>
+        <cylinderGeometry args={[0, 0.8, 1.6, 3]} />
+        <meshStandardMaterial 
+          color={isActive ? "#d4883b" : "#3f4a5c"} 
+          wireframe={true} 
+          emissive={isActive ? "#d4883b" : "#000"} 
+          emissiveIntensity={0.5} 
+        />
+      </mesh>
+    </group>
+  );
+}
+
+// Helper to render the matching motif per station index
+function StationMotifRenderer({ index, position, isActive }: { index: number; position: [number, number, number]; isActive: boolean }) {
+  switch (index) {
+    case 0: return <Station01Motif position={position} isActive={isActive} />;
+    case 1: return <Station02Motif position={position} isActive={isActive} />;
+    case 2: return <Station03Motif position={position} isActive={isActive} />;
+    case 3: return <Station04Motif position={position} isActive={isActive} />;
+    case 4: return <Station05Motif position={position} isActive={isActive} />;
+    case 5: return <Station06Motif position={position} isActive={isActive} />;
+    case 6: return <Station07Motif position={position} isActive={isActive} />;
+    default: return null;
+  }
+}
 
 // The Luminous Optical Cable: smooth CatmullRom spline through the corridor
 function OpticalCorridorCable() {
   const { curve, tubeGeometry } = useMemo(() => {
     const points = STATION_POSITIONS.map(p => new THREE.Vector3(p[0], p[1], p[2]));
     const c = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.25);
-    const geo = new THREE.TubeGeometry(c, 120, 0.09, 8, false);
+    const geo = new THREE.TubeGeometry(c, 140, 0.08, 8, false);
     return { curve: c, tubeGeometry: geo };
   }, []);
 
@@ -64,7 +333,7 @@ function OpticalCorridorCable() {
       <mesh ref={signalPhotonRef}>
         <sphereGeometry args={[0.26, 16, 16]} />
         <meshBasicMaterial color="#ffffff" />
-        <pointLight color="#d4883b" intensity={3} distance={5} />
+        <pointLight color="#d4883b" intensity={3} distance={6} />
       </mesh>
     </group>
   );
@@ -88,42 +357,13 @@ function SeabedTerrain() {
   return (
     <mesh geometry={terrainGeo} rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.2, 0]}>
       <meshStandardMaterial 
-        color="#0d1118" 
+        color="#0b0e14" 
         wireframe={true} 
         transparent 
         opacity={0.3} 
         roughness={0.95}
       />
     </mesh>
-  );
-}
-
-// Orbiting Actor Grain representations around Station 05 (Flagship)
-function FlagshipActorMesh({ position }: { position: [number, number, number] }) {
-  const grainGroupRef = useRef<THREE.Group>(null);
-
-  useFrame((state) => {
-    if (grainGroupRef.current) {
-      grainGroupRef.current.rotation.y = state.clock.getElapsedTime() * 0.8;
-    }
-  });
-
-  return (
-    <group position={[position[0], position[1] + 1.8, position[2]]}>
-      {/* Orbiting Actor Grains */}
-      <group ref={grainGroupRef}>
-        {[0, 1, 2, 3].map((i) => {
-          const angle = (i * Math.PI) / 2;
-          const r = 1.4;
-          return (
-            <mesh key={i} position={[Math.cos(angle) * r, Math.sin(angle * 2) * 0.2, Math.sin(angle) * r]}>
-              <boxGeometry args={[0.2, 0.2, 0.2]} />
-              <meshStandardMaterial color="#f59e0b" emissive="#d4883b" emissiveIntensity={1.2} />
-            </mesh>
-          );
-        })}
-      </group>
-    </group>
   );
 }
 
@@ -164,6 +404,9 @@ function StationTerminal({
         />
       </mesh>
 
+      {/* Bespoke Procedural Motif for this station */}
+      <StationMotifRenderer index={index} position={[0, 0, 0]} isActive={isActive} />
+
       {/* Floating Optical Core Beacon */}
       <Float speed={2} rotationIntensity={0.4} floatIntensity={0.4}>
         <mesh 
@@ -182,14 +425,11 @@ function StationTerminal({
           <meshStandardMaterial 
             color={isFlagship ? '#f59e0b' : '#d4883b'} 
             emissive={isFlagship ? '#d4883b' : '#92400e'}
-            emissiveIntensity={isActive ? 2.0 : 0.8}
+            emissiveIntensity={isActive ? 2.2 : 0.8}
             wireframe={!isActive}
           />
         </mesh>
       </Float>
-
-      {/* Special flagship actor orbital visualization */}
-      {isFlagship && <FlagshipActorMesh position={position} />}
 
       {/* In-world Station Billboard Tag */}
       <Html position={[0, position[1] + (isFlagship ? 2.8 : 2.2), 0]} center distanceFactor={14}>
@@ -315,6 +555,9 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
         <directionalLight position={[15, 25, 20]} intensity={1.3} color="#f8fafc" />
         <pointLight position={[8, 4, -1]} intensity={2.5} color="#d4883b" distance={20} />
 
+        {/* Bathymetric Sediment Drift (Sparse Motes) */}
+        <BathymetricSedimentMotes />
+
         {/* Camera Flight Motion Engine */}
         <CorridorCameraController
           activeStationIndex={activeStationIndex}
@@ -328,7 +571,7 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
         <SeabedTerrain />
         <OpticalCorridorCable />
 
-        {/* 7 Repeater Station Terminals */}
+        {/* 7 Repeater Station Terminals with Bespoke Motifs */}
         {CASE_FILES.map((caseFile, idx) => (
           <StationTerminal
             key={caseFile.id}

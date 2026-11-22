@@ -50,6 +50,7 @@ export const Navigation: React.FC<NavigationProps> = ({
         <nav className="hidden lg:flex items-center gap-6 text-xs font-mono text-[#9aa4b5]">
           <a href="#chapters" className="hover:text-[#d4883b] transition-colors">01-07 Case Files</a>
           <a href="#decision-log" className="hover:text-[#d4883b] transition-colors">Decision Log</a>
+          <a href="#skills-by-evidence" className="hover:text-[#d4883b] transition-colors">Skills by Evidence</a>
           <a href="#open-source" className="hover:text-[#d4883b] transition-colors">Open Source</a>
           <a href="#playbooks" className="hover:text-[#d4883b] transition-colors">Playbooks</a>
           <a href="#telemetry-proof" className="hover:text-[#d4883b] transition-colors">Full-Stack Proof</a>

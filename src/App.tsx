@@ -4,6 +4,7 @@ import { Navigation } from './components/Navigation';
 import { ArrivalHero } from './components/ArrivalHero';
 import { CaseFileCard } from './components/CaseFileCard';
 import { DecisionLogSection } from './components/DecisionLogSection';
+import { SkillsByEvidence } from './components/SkillsByEvidence';
 import { OpenSourceSection } from './components/OpenSourceSection';
 import { PlaybooksSection } from './components/PlaybooksSection';
 import { FullStackProofSection } from './components/FullStackProofSection';
@@ -115,6 +116,9 @@ export function App() {
 
         {/* The Observatory: Decision Log */}
         <DecisionLogSection />
+
+        {/* Skills by Evidence Matrix */}
+        <SkillsByEvidence />
 
         {/* Open Source Artifacts & Maintainer Philosophy */}
         <OpenSourceSection />

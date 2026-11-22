@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0d11"/>
+      <stop offset="100%" stop-color="#12161f"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#d4883b" stop-opacity="0.2"/>
+      <stop offset="50%" stop-color="#d4883b" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Bathymetric grid lines -->
+  <g stroke="#1d2433" stroke-width="1" opacity="0.6">
+    <line x1="0" y1="100" x2="1200" y2="100"/>
+    <line x1="0" y1="200" x2="1200" y2="200"/>
+    <line x1="0" y1="300" x2="1200" y2="300"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="500" x2="1200" y2="500"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+
+  <!-- Optical Signal Beam -->
+  <path d="M 100 480 Q 400 380 600 420 T 1100 340" fill="none" stroke="url(#beam)" stroke-width="4"/>
+
+  <!-- Station Repeater Points -->
+  <circle cx="200" cy="455" r="7" fill="#d4883b"/>
+  <circle cx="450" cy="395" r="7" fill="#d4883b"/>
+  <circle cx="650" cy="425" r="10" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="900" cy="370" r="7" fill="#38bdf8"/>
+
+  <!-- Badge -->
+  <rect x="80" y="70" width="360" height="36" rx="4" fill="#181d26" stroke="#2a3548"/>
+  <text x="100" y="93" font-family="monospace" font-size="14" fill="#d4883b" font-weight="bold">
+    THE SIGNAL CORRIDOR // 12+ YEARS LEAD
+  </text>
+
+  <!-- Main Title -->
+  <text x="80" y="210" font-family="sans-serif" font-size="52" fill="#eeeff2" font-weight="bold">
+    Sourabh Rustagi
+  </text>
+  <text x="80" y="265" font-family="sans-serif" font-size="28" fill="#d4883b" font-weight="600">
+    Lead Engineer &amp; Distributed Systems Architect
+  </text>
+
+  <!-- Subtitle -->
+  <text x="80" y="325" font-family="sans-serif" font-size="20" fill="#9aa4b5">
+    Distributed Actors (.NET Orleans) • Low-Latency WebRTC (LiveKit) • 1M+ Users (0 Locks)
+  </text>
+
+  <!-- Key Metrics Box -->
+  <g transform="translate(80, 520)">
+    <text x="0" y="0" font-family="monospace" font-size="16" fill="#38bdf8" font-weight="bold">1,000,000+ USERS</text>
+    <text x="0" y="20" font-family="monospace" font-size="12" fill="#7a8494">0 DISTRIBUTED LOCKS</text>
+
+    <text x="260" y="0" font-family="monospace" font-size="16" fill="#10b981" font-weight="bold">&lt; 120ms LATENCY</text>
+    <text x="260" y="20" font-family="monospace" font-size="12" fill="#7a8494">GLOBAL WEBRTC STREAMING</text>
+
+    <text x="540" y="0" font-family="monospace" font-size="16" fill="#d4883b" font-weight="bold">28,500+ DOWNLOADS</text>
+    <text x="540" y="20" font-family="monospace" font-size="12" fill="#7a8494">ZERO-BLOAT OPEN SOURCE</text>
+
+    <text x="820" y="0" font-family="monospace" font-size="16" fill="#eeeff2" font-weight="bold">FLUX v2 GITOPS</text>
+    <text x="820" y="20" font-family="monospace" font-size="12" fill="#7a8494">90% ROLLBACK REDUCTION</text>
+  </g>
+</svg>

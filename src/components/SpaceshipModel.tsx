@@ -22,14 +22,18 @@ export const SpaceshipModel: React.FC<SpaceshipModelProps> = ({
     const t = state.clock.getElapsedTime();
 
     // Engine flame pulsation based on speed and boost
-    const flameScaleZ = (1.0 + Math.sin(t * 25) * 0.15) * (isBoosting ? 2.8 : 1.0 + speed * 1.2);
-    const flameScaleXY = 1.0 + Math.sin(t * 30) * 0.1 * (isBoosting ? 1.5 : 1.0);
+    const isStopped = speed < 0.05 && !isBoosting;
+    const baseScaleZ = isStopped ? 0.15 : (isBoosting ? 2.8 : 0.4 + speed * 1.5);
+    const flameScaleZ = (baseScaleZ + Math.sin(t * 25) * (isStopped ? 0.02 : 0.12));
+    const flameScaleXY = isStopped ? 0.3 : (1.0 + Math.sin(t * 30) * 0.1 * (isBoosting ? 1.5 : 1.0));
 
     if (engineFlame1.current) {
       engineFlame1.current.scale.set(flameScaleXY, flameScaleXY, flameScaleZ);
+      (engineFlame1.current.material as THREE.Material).opacity = isStopped ? 0.3 : 0.9;
     }
     if (engineFlame2.current) {
       engineFlame2.current.scale.set(flameScaleXY, flameScaleXY, flameScaleZ);
+      (engineFlame2.current.material as THREE.Material).opacity = isStopped ? 0.3 : 0.9;
     }
 
     // Navigation strobe

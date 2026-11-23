@@ -35,13 +35,17 @@ A dual-mode systems engineering portfolio engineered with zero bloat:
 - **Physical 3D Company Landing Zones:** Every company in Sourabh's career features an illuminated octagonal docking platform with vertical guidance laser pylons, animated rotating holographic reticles, and real-time touchdown confirmation telemetry.
 - **Vibrant Cosmic Worlds:** Dynamic volumetric nebula clouds (violet/magenta, electric cyan/turquoise, warm solar amber, royal cobalt), 7,000 saturated color-temperature stars, and sector-tinted hexagonal space gates.
 - **Authored Narrative Flow:** 7 sequential sectors connected by hexagonal guidance gates. Approaching each landing zone unlocks company achievements, and the Grand Finale modal reveals the verified 13+ year architectural impact matrix.
-- **Desktop & Mobile Controls:**
-  - `ArrowUp` / `W`: Pitch Down
-  - `ArrowDown` / `S`: Pitch Up
-  - `ArrowLeft` / `A` or `[◄]`: Bank & steer Left
-  - `ArrowRight` / `D` or `[►]`: Bank & steer Right
-  - `Shift` / `Space` / `[⚡ BOOST]`: Fire warp afterburners (increases speed, flares thruster plasma, expands camera FOV).
-  - `Touch Drag`: Steer spaceship pitch and yaw through 3D space with natural inverted flight pitch.
+- **Desktop & Mobile Game Controls:**
+  - `Space` / `W` or `[🚀 THRUST]`: Forward Propulsion (hold to fly forward; decelerates to a complete stop when released).
+  - `S` / `X` / `B` or `[⏹ BRAKE]`: Active Retro-Brake & Full Stop.
+  - `ArrowUp` or `[▲ DIVE]`: Pitch Down / Dive.
+  - `ArrowDown` or `[▼ CLIMB]`: Pitch Up / Climb.
+  - `ArrowLeft` / `A` or `[◄]`: Bank & Steer Left.
+  - `ArrowRight` / `D` or `[►]`: Bank & Steer Right.
+  - `Shift` or `[⚡ WARP]`: Warp Afterburner boost.
+  - `E` or `[🛸 TOUCHDOWN]`: Proximity Touchdown & Docking at Company Landing Zone.
+  - `Throttle Configurator`: Configurable cruise speed slider (0 to 45 km/s) and presets (`STOP`, `SLOW`, `CRUISE`, `FAST`).
+  - `Pitch Inverter`: 1-click toggle between Inverted (flight stick) and Standard pitch.
   - `F` / Reticle Click: Toggle Company Codex scanner.
 - **Quantum Autopilot:** Bottom HUD scrubber with clear completion checkmarks (`✓`) and 1-click warp navigation to any company landing zone.
 - **Native Web Audio:** Zero-dependency procedural Web Audio API synthesizer for warp whooshes, radar target locks, and achievement fanfare.

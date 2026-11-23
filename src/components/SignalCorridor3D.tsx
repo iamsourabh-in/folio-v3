@@ -26,10 +26,15 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
   onExitToSkim,
   onOpenContact
 }) => {
-  // Flight steering state
+  // Flight steering & throttle state
   const [steerX, setSteerX] = useState(0);
   const [steerY, setSteerY] = useState(0);
+  const [isThrusting, setIsThrusting] = useState(false);
+  const [isBraking, setIsBraking] = useState(false);
   const [isBoosting, setIsBoosting] = useState(false);
+  const [cruiseSpeedSetting, setCruiseSpeedSetting] = useState(0); // 0 = stops when unpropelled
+  const [invertPitch, setInvertPitch] = useState(true); // Default true: Up key maps to dive down, Down key maps to climb up
+
   const [autopilotPlanetIndex, setAutopilotPlanetIndex] = useState<number | null>(initialStationIndex);
 
   // Mission progression & cleared sectors
@@ -45,9 +50,12 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
 
   // Telemetry (throttled from FlightRig)
   const [telemetry, setTelemetry] = useState({
-    speedKm: 640,
+    speedKm: 0,
     targetName: PLANETS_META[initialStationIndex ?? 0].name,
-    distanceAu: 15
+    distanceAu: 15,
+    isStopped: true,
+    isNearPlanet: false,
+    nearPlanetIdx: 0
   });
 
   // Achievement unlock notification banner
@@ -120,27 +128,51 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
     handleSelectPlanet(0);
   };
 
-  // Keyboard flight controls
+  // Game Keyboard Flight Controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Shift' || e.key === ' ') {
+      // Warp Boost
+      if (e.key === 'Shift') {
         setIsBoosting(true);
         flightAudio.playWarpWhoosh();
-      } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+      } 
+      // Forward Propulsion Thrust
+      else if (e.key === ' ' || e.code === 'Space' || e.key.toLowerCase() === 'w') {
+        setIsThrusting(true);
+        setAutopilotPlanetIndex(null);
+        flightAudio.playThrustPulse();
+      } 
+      // Brake / Stop / Reverse
+      else if (e.key.toLowerCase() === 's' || e.key.toLowerCase() === 'x' || e.key.toLowerCase() === 'b') {
+        setIsBraking(true);
+        setCruiseSpeedSetting(0); // Immediately cancel cruise to stop
+        flightAudio.playBrakeHiss();
+      } 
+      // Steering: Yaw / Bank Left & Right
+      else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
         setSteerX(1.0);
         setAutopilotPlanetIndex(null);
       } else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
         setSteerX(-1.0);
         setAutopilotPlanetIndex(null);
-      } else if (e.key === 'ArrowUp' || e.key.toLowerCase() === 'w') {
-        // UP key mapped to DOWN (as requested by user)
-        setSteerY(-1.0);
+      } 
+      // Steering: Pitch Up & Down (Configurable Inversion, default: Up maps to Down)
+      else if (e.key === 'ArrowUp') {
+        setSteerY(invertPitch ? -1.0 : 1.0);
         setAutopilotPlanetIndex(null);
-      } else if (e.key === 'ArrowDown' || e.key.toLowerCase() === 's') {
-        // DOWN key mapped to UP (as requested by user)
-        setSteerY(1.0);
+      } else if (e.key === 'ArrowDown') {
+        setSteerY(invertPitch ? 1.0 : -1.0);
         setAutopilotPlanetIndex(null);
-      } else if (e.key.toLowerCase() === 'f') {
+      } 
+      // Dock / Touchdown key
+      else if (e.key.toLowerCase() === 'e') {
+        if (telemetry.isNearPlanet) {
+          handleSelectPlanet(telemetry.nearPlanetIdx);
+          flightAudio.playTouchdown();
+        }
+      } 
+      // Codex toggle
+      else if (e.key.toLowerCase() === 'f') {
         setIsCodexOpen(prev => !prev);
       } else if (e.key === 'Escape') {
         setIsCodexOpen(false);
@@ -148,11 +180,15 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Shift' || e.key === ' ') {
+      if (e.key === 'Shift') {
         setIsBoosting(false);
+      } else if (e.key === ' ' || e.code === 'Space' || e.key.toLowerCase() === 'w') {
+        setIsThrusting(false);
+      } else if (e.key.toLowerCase() === 's' || e.key.toLowerCase() === 'x' || e.key.toLowerCase() === 'b') {
+        setIsBraking(false);
       } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd' || e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
         setSteerX(0);
-      } else if (e.key === 'ArrowUp' || e.key.toLowerCase() === 'w' || e.key === 'ArrowDown' || e.key.toLowerCase() === 's') {
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         setSteerY(0);
       }
     };
@@ -163,7 +199,7 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, []);
+  }, [invertPitch, telemetry.isNearPlanet, telemetry.nearPlanetIdx]);
 
   const handleToggleSound = () => {
     flightAudio.isMuted = !isSoundMuted;
@@ -175,7 +211,7 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
       className="fixed inset-0 z-50 w-screen h-screen bg-[#030508] overflow-hidden select-none"
       style={{ touchAction: 'none' }}
       onTouchStart={(e) => {
-        if ((e.target as HTMLElement).tagName !== 'BUTTON') {
+        if ((e.target as HTMLElement).tagName !== 'BUTTON' && (e.target as HTMLElement).tagName !== 'INPUT') {
           touchStartRef.current = {
             x: e.touches[0].clientX,
             y: e.touches[0].clientY
@@ -185,10 +221,9 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
       onTouchMove={(e) => {
         if (touchStartRef.current !== null) {
           const deltaX = (e.touches[0].clientX - touchStartRef.current.x) / (window.innerWidth * 0.25);
-          // Inverted vertical pitch: up drag mapped to down, down drag mapped to up
           const deltaY = (touchStartRef.current.y - e.touches[0].clientY) / (window.innerHeight * 0.25);
           setSteerX(Math.max(-1, Math.min(1, deltaX * 1.5)));
-          setSteerY(Math.max(-1, Math.min(1, -deltaY * 1.5)));
+          setSteerY(Math.max(-1, Math.min(1, (invertPitch ? -1 : 1) * deltaY * 1.5)));
           setAutopilotPlanetIndex(null);
         }
       }}
@@ -234,7 +269,7 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
         {/* Galactic Waypoints & Space Gates along Corridor */}
         <GalacticWaypoints />
 
-        {/* 7 Majestic Celestial Megastructure Planets with Procedural PBR & Atmospheres */}
+        {/* 7 Majestic Celestial Megastructure Planets with Dedicated Company Landing Pads */}
         <CosmicPlanets
           shipPos={new THREE.Vector3(0, 0, 0)}
           targetedPlanetIndex={activePlanetIndex}
@@ -245,28 +280,57 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
         <SpaceshipFlightRig
           steerX={steerX}
           steerY={steerY}
+          isThrusting={isThrusting}
+          isBraking={isBraking}
           isBoosting={isBoosting}
+          cruiseSpeedSetting={cruiseSpeedSetting}
           autopilotPlanetIndex={autopilotPlanetIndex}
           onReachPlanet={handleReachPlanet}
-          onUpdateTelemetry={(speedKm, targetName, distanceAu) => {
-            setTelemetry({ speedKm, targetName, distanceAu });
+          onUpdateTelemetry={(speedKm, targetName, distanceAu, isStopped, isNearPlanet, nearPlanetIdx) => {
+            setTelemetry({ speedKm, targetName, distanceAu, isStopped, isNearPlanet, nearPlanetIdx });
           }}
         />
       </Canvas>
 
-      {/* Cockpit HUD, Mission Progress, Warp to Next Sector, & Touch Controls */}
+      {/* Cockpit HUD with Game Speed Controls, Proximity Touchdown, & Directional Sticks */}
       <SpaceshipCockpitHUD
         currentPlanetIndex={activePlanetIndex}
         targetedPlanet={activePlanet}
         speed={telemetry.speedKm / 320}
+        speedKm={telemetry.speedKm}
         isBoosting={isBoosting}
+        isThrusting={isThrusting}
+        isBraking={isBraking}
+        isStopped={telemetry.isStopped}
         distanceToTarget={telemetry.distanceAu}
         isOrbiting={isOrbiting}
+        isNearPlanet={telemetry.isNearPlanet}
+        nearPlanetIdx={telemetry.nearPlanetIdx}
         clearedSectors={clearedSectors}
         achievementNotification={achievementNotification}
         isSoundMuted={isSoundMuted}
+        cruiseSpeedSetting={cruiseSpeedSetting}
+        invertPitch={invertPitch}
+        onChangeCruiseSpeed={(s) => setCruiseSpeedSetting(s)}
+        onToggleInvertPitch={() => setInvertPitch(prev => !prev)}
+        onStartThrust={() => {
+          setIsThrusting(true);
+          setAutopilotPlanetIndex(null);
+          flightAudio.playThrustPulse();
+        }}
+        onStopThrust={() => setIsThrusting(false)}
+        onStartBrake={() => {
+          setIsBraking(true);
+          setCruiseSpeedSetting(0);
+          flightAudio.playBrakeHiss();
+        }}
+        onStopBrake={() => setIsBraking(false)}
         onToggleSound={handleToggleSound}
         onSelectPlanet={handleSelectPlanet}
+        onDockAtPlanet={(idx) => {
+          handleSelectPlanet(idx);
+          flightAudio.playTouchdown();
+        }}
         onWarpToNextSector={handleWarpToNextSector}
         onOpenGrandFinale={() => setIsFinaleOpen(true)}
         onToggleCodex={() => setIsCodexOpen(prev => !prev)}
@@ -278,6 +342,14 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
         }}
         onSteerRight={() => {
           setSteerX(1.0);
+          setAutopilotPlanetIndex(null);
+        }}
+        onSteerPitchDown={() => {
+          setSteerY(-1.0);
+          setAutopilotPlanetIndex(null);
+        }}
+        onSteerPitchUp={() => {
+          setSteerY(1.0);
           setAutopilotPlanetIndex(null);
         }}
         onSteerReset={() => {

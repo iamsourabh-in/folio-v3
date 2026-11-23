@@ -6,17 +6,30 @@ import { SpaceshipModel } from './SpaceshipModel';
 
 interface SpaceshipFlightRigProps {
   steerX: number; // -1 (left) to +1 (right)
-  steerY: number; // -1 (down) to +1 (up)
+  steerY: number; // -1 to +1
+  isThrusting: boolean;
+  isBraking: boolean;
   isBoosting: boolean;
+  cruiseSpeedSetting: number; // 0 = stopped when unpropelled; >0 = cruise speed
   autopilotPlanetIndex: number | null;
   onReachPlanet: (index: number) => void;
-  onUpdateTelemetry: (speedKm: number, targetName: string, distanceAu: number) => void;
+  onUpdateTelemetry: (
+    speedKm: number, 
+    targetName: string, 
+    distanceAu: number, 
+    isStopped: boolean,
+    isNearPlanet: boolean,
+    nearPlanetIdx: number
+  ) => void;
 }
 
 export const SpaceshipFlightRig: React.FC<SpaceshipFlightRigProps> = ({
   steerX,
   steerY,
+  isThrusting,
+  isBraking,
   isBoosting,
+  cruiseSpeedSetting,
   autopilotPlanetIndex,
   onReachPlanet,
   onUpdateTelemetry
@@ -29,7 +42,7 @@ export const SpaceshipFlightRig: React.FC<SpaceshipFlightRigProps> = ({
 
   // Flight vectors
   const pos = useRef(new THREE.Vector3(0, 0, -10));
-  const currentSpeed = useRef(20.0);
+  const currentSpeed = useRef(0.0); // Starts at 0 (stopped until propelled!)
   const currentRoll = useRef(0);
   const currentPitch = useRef(0);
   const currentYaw = useRef(0);
@@ -49,28 +62,27 @@ export const SpaceshipFlightRig: React.FC<SpaceshipFlightRigProps> = ({
     const t = state.clock.getElapsedTime();
     const clampedDelta = Math.min(delta, 0.1); // Prevent physics explosion on tab switch
 
-    const targetSpeed = isBoosting ? 48.0 : 20.0;
-    currentSpeed.current = THREE.MathUtils.lerp(currentSpeed.current, targetSpeed, clampedDelta * 4.0);
-
     if (autopilotPlanetIndex !== null) {
       // -------------------------------------------------------------
-      // AUTOPILOT NAVIGATION: WARP TO TARGET PLANET & ENTER ORBIT
+      // AUTOPILOT NAVIGATION: DOCK & ENTER ORBIT AT TARGET LANDING ZONE
       // -------------------------------------------------------------
       const targetPlanet = PLANETS_META[autopilotPlanetIndex];
       const targetPos = new THREE.Vector3(...targetPlanet.coordinates);
       const distToPlanet = pos.current.distanceTo(targetPos);
 
+      // Smoothly fly towards landing pad orbital vector
       if (distToPlanet > targetPlanet.radius + 8.5) {
-        // En route: fly smoothly towards parking orbit
         const desiredX = targetPlanet.coordinates[0] > 0 
-          ? targetPlanet.coordinates[0] - 8.0 
-          : targetPlanet.coordinates[0] + 8.0;
-        const desiredY = targetPlanet.coordinates[1] + 1.5;
-        const desiredZ = targetPlanet.coordinates[2] - 8.0;
+          ? targetPlanet.coordinates[0] - 7.5 
+          : targetPlanet.coordinates[0] + 7.5;
+        const desiredY = targetPlanet.coordinates[1] + 1.2;
+        const desiredZ = targetPlanet.coordinates[2] - 7.5;
 
         pos.current.x = THREE.MathUtils.lerp(pos.current.x, desiredX, clampedDelta * 3.5);
         pos.current.y = THREE.MathUtils.lerp(pos.current.y, desiredY, clampedDelta * 3.5);
         pos.current.z = THREE.MathUtils.lerp(pos.current.z, desiredZ, clampedDelta * 3.5);
+
+        currentSpeed.current = THREE.MathUtils.lerp(currentSpeed.current, 28.0, clampedDelta * 3.0);
 
         // Bank towards target
         const dx = desiredX - pos.current.x;
@@ -78,14 +90,15 @@ export const SpaceshipFlightRig: React.FC<SpaceshipFlightRigProps> = ({
         currentYaw.current = THREE.MathUtils.lerp(currentYaw.current, Math.sign(dx) * 0.25, clampedDelta * 4.0);
         currentPitch.current = THREE.MathUtils.lerp(currentPitch.current, 0, clampedDelta * 4.0);
       } else {
-        // High Orbit: circle around the planet
-        orbitAngle.current += clampedDelta * 0.5;
-        const orbitR = targetPlanet.radius + 6.5;
+        // High Parking Orbit around the company landing zone
+        orbitAngle.current += clampedDelta * 0.45;
+        const orbitR = targetPlanet.radius + 6.0;
         pos.current.x = targetPlanet.coordinates[0] + Math.sin(orbitAngle.current) * orbitR;
-        pos.current.y = targetPlanet.coordinates[1] + Math.sin(orbitAngle.current * 2) * 0.8;
+        pos.current.y = targetPlanet.coordinates[1] + Math.sin(orbitAngle.current * 2) * 0.7;
         pos.current.z = targetPlanet.coordinates[2] + Math.cos(orbitAngle.current) * orbitR;
 
-        currentRoll.current = THREE.MathUtils.lerp(currentRoll.current, Math.sin(t * 0.5) * 0.2, clampedDelta * 3.0);
+        currentSpeed.current = THREE.MathUtils.lerp(currentSpeed.current, 12.0, clampedDelta * 3.0);
+        currentRoll.current = THREE.MathUtils.lerp(currentRoll.current, Math.sin(t * 0.5) * 0.15, clampedDelta * 3.0);
         currentYaw.current = THREE.MathUtils.lerp(currentYaw.current, orbitAngle.current + Math.PI / 2, clampedDelta * 3.0);
         currentPitch.current = THREE.MathUtils.lerp(currentPitch.current, 0, clampedDelta * 3.0);
 
@@ -97,18 +110,45 @@ export const SpaceshipFlightRig: React.FC<SpaceshipFlightRigProps> = ({
       }
     } else {
       // -------------------------------------------------------------
-      // FREE FORWARD FLIGHT DOWN THE GALACTIC HIGHWAY
+      // FREE GAME FLIGHT WITH FULL THROTTLE & STOPPING MECHANICS
       // -------------------------------------------------------------
       hasTriggeredArrival.current = null;
 
-      // Forward flight along +Z
+      // 1. Calculate Target Speed based on propulsion & throttle
+      let targetSpeed = 0.0;
+      let accelRate = 3.5;
+
+      if (isBraking) {
+        // Active brake / reverse
+        targetSpeed = currentSpeed.current > 0.5 ? 0.0 : -3.5;
+        accelRate = 8.0;
+      } else if (isBoosting) {
+        // Warp Afterburner
+        targetSpeed = 48.0;
+        accelRate = 5.0;
+      } else if (isThrusting) {
+        // Active forward propulsion
+        targetSpeed = Math.max(22.0, cruiseSpeedSetting > 0 ? cruiseSpeedSetting : 22.0);
+        accelRate = 4.5;
+      } else {
+        // Not propelled: if user configured a cruise speed > 0, cruise at that speed;
+        // otherwise, decelerate to a complete stop!
+        targetSpeed = cruiseSpeedSetting;
+        accelRate = cruiseSpeedSetting === 0 ? 3.0 : 2.5;
+      }
+
+      currentSpeed.current = THREE.MathUtils.lerp(currentSpeed.current, targetSpeed, clampedDelta * accelRate);
+      if (Math.abs(currentSpeed.current) < 0.08 && targetSpeed === 0) {
+        currentSpeed.current = 0;
+      }
+
+      // 2. Position updates (only moves along Z when speed != 0!)
       pos.current.z += currentSpeed.current * clampedDelta;
 
-      // Horizontal steering (Left / Right)
-      pos.current.x += steerX * 24.0 * clampedDelta;
+      // Lateral and vertical steering
+      pos.current.x += steerX * 22.0 * clampedDelta;
       pos.current.x = THREE.MathUtils.clamp(pos.current.x, -38, 38);
 
-      // Vertical steering (Up / Down)
       pos.current.y += steerY * 18.0 * clampedDelta;
       pos.current.y = THREE.MathUtils.clamp(pos.current.y, -12, 16);
 
@@ -121,9 +161,11 @@ export const SpaceshipFlightRig: React.FC<SpaceshipFlightRigProps> = ({
       currentYaw.current = THREE.MathUtils.lerp(currentYaw.current, targetYaw, clampedDelta * 4.0);
       currentPitch.current = THREE.MathUtils.lerp(currentPitch.current, targetPitch, clampedDelta * 4.0);
 
-      // Loop highway seamlessly when passing Terminus
-      if (pos.current.z > 335) {
+      // Seamless corridor wrap
+      if (pos.current.z > 340) {
         pos.current.z = -15;
+      } else if (pos.current.z < -25) {
+        pos.current.z = -25;
       }
     }
 
@@ -151,25 +193,34 @@ export const SpaceshipFlightRig: React.FC<SpaceshipFlightRigProps> = ({
     camera.lookAt(pos.current.x, pos.current.y + 0.4, pos.current.z + 8.0);
 
     // -------------------------------------------------------------
-    // THROTTLED TELEMETRY UPDATES (Every 150ms, prevents React re-render lag)
+    // THROTTLED TELEMETRY UPDATES (Every 150ms)
     // -------------------------------------------------------------
     if (t - lastTelemetryUpdate.current > 0.15) {
       lastTelemetryUpdate.current = t;
 
       // Find nearest planet
       let closestIdx = 0;
-      let closestDist = Infinity;
-      PLANETS_META.forEach((p, idx) => {
-        const pVec = new THREE.Vector3(...p.coordinates);
-        const d = pos.current.distanceTo(pVec);
-        if (d < closestDist) {
-          closestDist = d;
+      let minDistance = Infinity;
+
+      PLANETS_META.forEach((planet, idx) => {
+        const d = pos.current.distanceTo(new THREE.Vector3(...planet.coordinates));
+        if (d < minDistance) {
+          minDistance = d;
           closestIdx = idx;
         }
       });
 
-      const speedKm = Math.round(currentSpeed.current * 32);
-      onUpdateTelemetry(speedKm, PLANETS_META[closestIdx].name, Math.round(closestDist));
+      const isStopped = Math.abs(currentSpeed.current) < 0.2;
+      const isNearPlanet = minDistance < 22.0;
+
+      onUpdateTelemetry(
+        Math.round(Math.abs(currentSpeed.current) * 16),
+        PLANETS_META[closestIdx].name,
+        parseFloat(minDistance.toFixed(1)),
+        isStopped,
+        isNearPlanet,
+        closestIdx
+      );
     }
   });
 
@@ -177,9 +228,9 @@ export const SpaceshipFlightRig: React.FC<SpaceshipFlightRigProps> = ({
     <group ref={rigRef}>
       <group ref={shipVisualRef}>
         <SpaceshipModel 
-          speed={isBoosting ? 2.5 : 1.0} 
+          speed={Math.abs(currentSpeed.current) / 20.0} 
           isBoosting={isBoosting} 
-          rollAngle={0} 
+          rollAngle={currentRoll.current} 
         />
       </group>
     </group>

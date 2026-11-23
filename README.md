@@ -36,9 +36,12 @@ A dual-mode systems engineering portfolio engineered with zero bloat:
 - **Vibrant Cosmic Worlds:** Dynamic volumetric nebula clouds (violet/magenta, electric cyan/turquoise, warm solar amber, royal cobalt), 7,000 saturated color-temperature stars, and sector-tinted hexagonal space gates.
 - **Authored Narrative Flow:** 7 sequential sectors connected by hexagonal guidance gates. Approaching each landing zone unlocks company achievements, and the Grand Finale modal reveals the verified 13+ year architectural impact matrix.
 - **Desktop & Mobile Controls:**
-  - `Mouse` or `Touch Drag`: Steer spaceship pitch and yaw through 3D space with zero state lag.
-  - `W` / `Shift` / `Space` / `[⚡ BOOST]`: Fire warp afterburners (increases speed, flares thruster plasma, expands camera FOV).
-  - `A` / `D` or `[◄] [►]`: Bank and roll wings.
+  - `ArrowUp` / `W`: Pitch Down
+  - `ArrowDown` / `S`: Pitch Up
+  - `ArrowLeft` / `A` or `[◄]`: Bank & steer Left
+  - `ArrowRight` / `D` or `[►]`: Bank & steer Right
+  - `Shift` / `Space` / `[⚡ BOOST]`: Fire warp afterburners (increases speed, flares thruster plasma, expands camera FOV).
+  - `Touch Drag`: Steer spaceship pitch and yaw through 3D space with natural inverted flight pitch.
   - `F` / Reticle Click: Toggle Company Codex scanner.
 - **Quantum Autopilot:** Bottom HUD scrubber with clear completion checkmarks (`✓`) and 1-click warp navigation to any company landing zone.
 - **Native Web Audio:** Zero-dependency procedural Web Audio API synthesizer for warp whooshes, radar target locks, and achievement fanfare.

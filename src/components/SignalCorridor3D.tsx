@@ -123,7 +123,7 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
   // Keyboard flight controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Shift' || e.key === ' ' || e.key.toLowerCase() === 'w') {
+      if (e.key === 'Shift' || e.key === ' ') {
         setIsBoosting(true);
         flightAudio.playWarpWhoosh();
       } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
@@ -132,11 +132,13 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
       } else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
         setSteerX(-1.0);
         setAutopilotPlanetIndex(null);
-      } else if (e.key === 'ArrowUp') {
-        setSteerY(1.0);
+      } else if (e.key === 'ArrowUp' || e.key.toLowerCase() === 'w') {
+        // UP key mapped to DOWN (as requested by user)
+        setSteerY(-1.0);
         setAutopilotPlanetIndex(null);
       } else if (e.key === 'ArrowDown' || e.key.toLowerCase() === 's') {
-        setSteerY(-1.0);
+        // DOWN key mapped to UP (as requested by user)
+        setSteerY(1.0);
         setAutopilotPlanetIndex(null);
       } else if (e.key.toLowerCase() === 'f') {
         setIsCodexOpen(prev => !prev);
@@ -146,11 +148,11 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Shift' || e.key === ' ' || e.key.toLowerCase() === 'w') {
+      if (e.key === 'Shift' || e.key === ' ') {
         setIsBoosting(false);
       } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd' || e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
         setSteerX(0);
-      } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key.toLowerCase() === 's') {
+      } else if (e.key === 'ArrowUp' || e.key.toLowerCase() === 'w' || e.key === 'ArrowDown' || e.key.toLowerCase() === 's') {
         setSteerY(0);
       }
     };
@@ -183,9 +185,10 @@ export const SignalCorridor3D: React.FC<SignalCorridor3DProps> = ({
       onTouchMove={(e) => {
         if (touchStartRef.current !== null) {
           const deltaX = (e.touches[0].clientX - touchStartRef.current.x) / (window.innerWidth * 0.25);
+          // Inverted vertical pitch: up drag mapped to down, down drag mapped to up
           const deltaY = (touchStartRef.current.y - e.touches[0].clientY) / (window.innerHeight * 0.25);
           setSteerX(Math.max(-1, Math.min(1, deltaX * 1.5)));
-          setSteerY(Math.max(-1, Math.min(1, deltaY * 1.5)));
+          setSteerY(Math.max(-1, Math.min(1, -deltaY * 1.5)));
           setAutopilotPlanetIndex(null);
         }
       }}
